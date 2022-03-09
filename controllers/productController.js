@@ -2,7 +2,6 @@ const router = require("express").Router();
 const Produit = require("../model/Produit");
 const joi = require("@hapi/joi");
 const {ajouterProduitValidation} = require("../functions & middelwares/validation");
-const getById = require("../functions & middelwares/getById");
 /**
  * @swagger
  * /api/admin/ajouterProduit:
@@ -100,7 +99,8 @@ const result = {
 res.json({ result });
 }
 else
-{console.log("yyyyyyyyyyyyyyyyyyyy");return res.status(400).json("Product is not found")}
+{
+return res.status(400).json("Product is not found")}
 
 });
 /**
