@@ -1,7 +1,9 @@
 const router =require("express").Router();
 const Notification = require("../model/Notification");
 const joi = require("@hapi/joi");
-const {ajouterNotifValidation}= require("../functions & middlewares/validation");
+const {ajouterNotifValidation}= require("../functions & middelwares/validation");
+const { authorization } = require("../functions & middelwares/authorization");
+
 
 
 
@@ -10,7 +12,7 @@ const {ajouterNotifValidation}= require("../functions & middlewares/validation")
 router.post("/ajouterNotification",async(req,res)=>{
 
 
-// let's validate the produit before we make a notification 
+// let's validate the notification before we make a notification 
 
 const {error} = ajouterNotifValidation(req.body);
 if (error) return res.status(400).json(error.details[0].message);
@@ -18,31 +20,30 @@ if (error) return res.status(400).json(error.details[0].message);
 
 /// creation de nouveau notification
 
-const notif = new Notification({})
+const notif = new Notification({
 
+    title:req.body.title,
+    description:req.body.description})
 
+    try{
+const savedNotification = await notif.save();
 
+const result = {
+    status:"added Notification.",
+    id:notif._id,
+    title:notif.title,
+    description:notif.description,
+};
 
+res.json({result});
 
+}catch(error){
 
+res.status(400).json(error);
 
+}
 
-
-
-
-
-
-
-
-
-
-});
-
-
-
-
-
-
+})
 
 
 
@@ -68,6 +69,7 @@ const notif = new Notification({})
 //********************listingNotification********************//
 router.get(
     "/listingNotification",
+    authorization("SUPERADMIN"),
     async (req, res, next) => {
       let notification;
       try {
@@ -84,3 +86,37 @@ router.get(
     }
   );
 
+
+
+
+  //******************************getByIdProduit******************************//
+router.post("/getByIdNotification",authorization("ADMIN"), async (req, res) => {
+    //**let's validate the data before we make a notification**//
+    const schema = joi.object({
+      id: joi.string().required(),
+    });
+    const { error } = schema.validate(req.body);
+    if (error) return res.status(400).json(error.details[0].message);
+    
+    //**checking if the product exists**//.
+    
+    const notification = await Notification.findById(req.body.id);
+    if (notification) 
+    {
+    
+    const result = {
+      status: "NOTIFICATION :",
+      id: notification._id,
+      title: notification.title,
+      description: notification.description,
+    }; 
+    res.json({ result });
+    }
+    else
+    {
+    return res.status(400).json("Notification dosen't exist")}
+    
+    });
+
+
+module.exports = router;

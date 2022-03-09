@@ -17,7 +17,7 @@ const ajouterPaysValidation = (data) => {
 //**********Ajouter pays *******************************/
 
 router.post("/ajouterPays",async(req,res)=>{
-console.log("nermineblabla")
+
 // validation de data 
 
 const {error} = ajouterPaysValidation(req.body);

@@ -57,6 +57,16 @@ const ajouterRechercheValidation = (data) => {
 };
 
 
+const ajouterNotifValidation = (data) => {
+  const schema = {
+    title: joi.string().required(),
+    description: joi.string().required(),
+  };
+  return joi.validate(data, schema);
+};
+
+
+module.exports.ajouterNotifValidation= ajouterNotifValidation;
 module.exports.registerValidationAdmin = registerValidationAdmin;
 module.exports.registerValidationUser = registerValidationUser;
 module.exports.ajouterProduitValidation = ajouterProduitValidation;
