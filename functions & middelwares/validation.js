@@ -3,8 +3,8 @@ const joi = require("@hapi/joi");
 //register validation
 const registerValidationAdmin = (data) => {
   const schema = {
-    firstName: joi.string().min(6).required(),
-    lastName: joi.string().min(6).required(),
+    firstName: joi.string().min(3).required(),
+    lastName: joi.string().min(3).required(),
     email: joi.string().min(6).required().email(),
     telNumber: joi.string().length(8).required(),
     permissions: joi.array().min(1).required(),
@@ -14,8 +14,8 @@ const registerValidationAdmin = (data) => {
 };
 const registerValidationUser = (data) => {
   const schema = {
-    firstName: joi.string().min(6).required(),
-    lastName: joi.string().min(6).required(),
+    firstName: joi.string().min(3).required(),
+    lastName: joi.string().min(3).required(),
     telNumber: joi.string().length(8).required(),
     email: joi.string().min(6).required().email(),
     prod_id: joi.string().required(),

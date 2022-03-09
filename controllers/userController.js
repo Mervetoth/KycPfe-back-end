@@ -1,5 +1,7 @@
 const router = require("express").Router();
 const User = require("../model/User");
+const Produit = require("../model/Produit");
+const Pays = require("../model/Pays");
 const jwt_decode = require("jwt-decode");
 const bcrypt = require("bcryptjs");
 const { registerValidationUser, loginValidation } = require("../functions & middelwares/validation");
@@ -45,13 +47,25 @@ let tokenList = [];
  *       200:
  *         description: Created
  */
-router.post("/register", authorization("ADMIN"), async (req, res) => {
+router.post("/register",/* authorization("ADMIN")*/ async (req, res) => {
   //**let's validate the data before we make a user**//
   const { error } = registerValidationUser(req.body);
   if (error) return res.status(400).json(error.details[0].message);
   //**checking if the user is already in the database**//
   const emailExist = await User.findOne({ email: req.body.email });
-  if (emailExist) return res.status(400).json("Email already exists");
+  if (emailExist) return res.status(400).json("Email already exists ."); 
+   //**checking if the cin is already in the database**//
+  const cinExist = await User.findOne({ cin: req.body.cin });
+  if (cinExist) return res.status(400).json("User with this cin already exists ."); 
+    //**checking if the tel is already in the database**//
+     const telNumberExist = await User.findOne({ telNumber: req.body.telNumber });
+  if (telNumberExist) return res.status(400).json("User with this phone number already exists .");
+    //**checking if the tel is already in the database**//
+    const pays_idExist = await User.findOne({ pays_id: req.body.pays_id});
+    if (pays_idExist) return res.status(400).json("User must belong to an existing country .");
+//**checking if the tel is already in the database**//
+const prod_idExist = await User.findOne({ prod_id: req.body.prod_id});
+if (prod_idExist) return res.status(400).json("Product not found .");
   //**hash the passwords**//
   const salt = await bcrypt.genSalt(10);
   const hashedPassword = await bcrypt.hash(req.body.password, salt);

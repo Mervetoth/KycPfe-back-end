@@ -2,6 +2,8 @@ const router = require("express").Router();
 const Admin = require("../model/Admin");
 const bcrypt = require("bcryptjs");
 const joi = require("@hapi/joi");
+const User = require("../model/User");
+
 const sendEmail = require("../functions & middelwares/sendEmail");
 const sendFile = require("../functions & middelwares/upload");
 const {registerValidationAdmin,loginValidation,} = require("../functions & middelwares/validation");
@@ -319,20 +321,21 @@ router.get(
 //********************ListingUser********************//
 router.get(
   "/listingUser",
-  authorization("SUPERADMIN"),
+ // authorization("SUPERADMIN"),
   async (req, res, next) => {
     let users;
     try {
       const { page = 1, limit = 2 } = req.query;
       users = await User.find({}, "-password")
         .limit(limit * 1)
-        .skip((page - 1) * limit);
+        .skip((page - 1) * limit); 
+         
+  
+          res.status(403).json("There is no users !");
+       
       const count = await User.count();
       const nbpage = Math.ceil(count / limit);
-      res.json({
-        users: users.map((user) => user.toObject({ getters: true })),
-        count,
-        nbpage,
+      res.json({users: users.map((user) => user.toObject({ getters: true })),count,nbpage,
       });
     } catch (err) {
       res.status(400).json(err);
