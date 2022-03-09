@@ -1,9 +1,8 @@
 const router = require("express").Router();
 const Produit = require("../model/Produit");
 const joi = require("@hapi/joi");
-const {
-  ajouerProduitValidation,
-} = require("../functions & middelwares/validation");
+const {ajouterProduitValidation} = require("../functions & middelwares/validation");
+const getById = require("../functions & middelwares/getById");
 /**
  * @swagger
  * /api/admin/ajouterProduit:
@@ -31,7 +30,7 @@ const {
 router.post("/ajouterProduit", async (req, res) => {
   //**let's validate the data before we make a produit**//
 
-  const { error } = ajouerProduitValidation(req.body);
+  const { error } = ajouterProduitValidation(req.body);
   if (error) return res.status(400).json(error.details[0].message);
 
 
@@ -56,13 +55,13 @@ router.post("/ajouterProduit", async (req, res) => {
 });
 /**
  * @swagger
- * /api/admin/consulterProduit:
+ * /api/admin/getByIdProduit:
  *    post:
  *      tags:
  *      - "produit"
  *      summary: "Consult product"
  *      description: "Consulting product"
- *      operationId: "consulterProduit"
+ *      operationId: "getByIdProduit"
  *      produces:
  *      - "application/json"
  *      parameters:
@@ -77,27 +76,32 @@ router.post("/ajouterProduit", async (req, res) => {
  *         description: Consulted
  */
 
-//******************************consulterProduit******************************//
-router.post("/consulterProduit", async (req, res) => {
-  //**let's validate the data before we make a produit**//
-  const schema = joi.object({
-    id: joi.string().required(),
-  });
-  const { error } = schema.validate(req.body);
-  if (error) return res.status(400).json(error.details[0].message);
+//******************************getByIdProduit******************************//
+router.post("/getByIdProduit", async (req, res) => {
+//**let's validate the data before we make a produit**//
+const schema = joi.object({
+  id: joi.string().required(),
+});
+const { error } = schema.validate(req.body);
+if (error) return res.status(400).json(error.details[0].message);
 
-  //**checking if the email exists**//.
+//**checking if the product exists**//.
 
-  const produit = await Produit.findById(req.body.id);
-  if (!produit) return res.status(400).json("Product is not found");
+const produit = await Produit.findById(req.body.id);
+if (produit) 
+{
 
-  const result = {
-    status: "Product :",
-    id: produit._id,
-    risqueProd: produit.risqueProd,
-    prodName: produit.prodName,
-  };
-  res.json({ result });
+const result = {
+  status: "Product :",
+  id: produit._id,
+  risqueProd: produit.risqueProd,
+  prodName: produit.prodName,
+}; 
+res.json({ result });
+}
+else
+{console.log("yyyyyyyyyyyyyyyyyyyy");return res.status(400).json("Product is not found")}
+
 });
 /**
  * @swagger

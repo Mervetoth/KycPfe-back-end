@@ -56,13 +56,13 @@ router.post("/ajouterProduit", async (req, res) => {
 });
 /**
  * @swagger
- * /api/admin/consulterProduit:
+ * /api/admin/getByIdProduit:
  *    post:
  *      tags:
  *      - "resultatCorr"
  *      summary: "Consult Match Result "
  *      description: "Consulting Match Result "
- *      operationId: "consulterProduit"
+ *      operationId: "getByIdProduit"
  *      produces:
  *      - "application/json"
  *      parameters:
@@ -77,8 +77,8 @@ router.post("/ajouterProduit", async (req, res) => {
  *         description: Consulted
  */
 
-//******************************consulterProduit******************************//
-router.post("/consulterProduit", async (req, res) => {
+//******************************getByIdProduit******************************//
+router.post("/getByIdProduit", async (req, res) => {
   //**let's validate the data before we make a resultatCorr**//
   const schema = joi.object({
     id: joi.string().required(),
