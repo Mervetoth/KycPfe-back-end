@@ -48,9 +48,6 @@ const ajouterRechercheValidation = (data) => {
   const schema = {
     typeRech: joi.string().required(),
     cin: joi.string().required(),
-    firstName: joi.string().required(),
-    lastName: joi.string().required(),
-    adminId: joi.string().required(),
     status: joi.string().required(),
     listeId: joi.string().required(),
     historiqueRech: joi.string().required(),

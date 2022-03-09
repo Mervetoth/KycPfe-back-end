@@ -1,9 +1,8 @@
 const router = require("express").Router();
 const Admin = require("../model/Admin");
+const User = require("../model/User");
 const bcrypt = require("bcryptjs");
 const joi = require("@hapi/joi");
-const User = require("../model/User");
-
 const sendEmail = require("../functions & middelwares/sendEmail");
 const sendFile = require("../functions & middelwares/upload");
 const {registerValidationAdmin,loginValidation,} = require("../functions & middelwares/validation");

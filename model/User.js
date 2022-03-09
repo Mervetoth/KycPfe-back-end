@@ -3,13 +3,13 @@ const userSchema = new mongoose.Schema({
   firstName: {
     type: String,
     required: true,
-    min: 6,
+    min: 3,
     max: 255,
   },
   lastName: {
     type: String,
     required: true,
-    min: 6,
+    min: 3,
     max: 255,
   },
   email: {
@@ -31,12 +31,12 @@ const userSchema = new mongoose.Schema({
   pays_id: {
     type: String,
     required: true,
-    min: 6,
+ 
   },
   prod_id: {
     type: String,
     required: true,
-    min: 6,
+   
   },
   birthDate: {
     type: String,

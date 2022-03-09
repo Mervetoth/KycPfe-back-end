@@ -21,7 +21,7 @@ console.log("nermineblabla")
 // validation de data 
 
 const {error} = ajouterPaysValidation(req.body);
-if (error)return(400).send(error.details[0].message);
+if (error) return res.status(400).json(error.details[0].message);
 
 // creation de pays 
 

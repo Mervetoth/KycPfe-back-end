@@ -1,6 +1,9 @@
 const router = require("express").Router();
 const Recherche = require("../model/Recherche");
 const joi = require("@hapi/joi");
+const Admin = require("../model/Admin");
+const User = require("../model/User");
+const jwt_decode = require("jwt-decode");
 const {
     ajouterRechercheValidation
 } = require("../functions & middelwares/validation");
@@ -29,19 +32,32 @@ const {
 
 /**********************************ajouterRecherche**********************************/
 router.post("/ajouterRecherche", async (req, res) => {
+  const authHeader = req.headers["authorization"];
+  const token = authHeader && authHeader.split(" ")[1];
+  if (!token) {
+    res.status(400).json("Token is not found");
+  } else {
+    const decoded = jwt_decode(token);
+    
+      const admin = await Admin.findById(decoded._id, "-password");}
   //**let's validate the data before we make a Recherche**//
 
   const { error } = ajouterRechercheValidation(req.body);
   if (error) return res.status(400).json(error.details[0].message);
 
 
+//**checking if the user is already in the database**//
+const user = await User.findOne({ cin: req.body.cin });
+if (!user) return res.status(400).json("User with this cin doesn't exists ."); 
+
+
   //******************** create new Search result ********************//
   const recherche = new Recherche({
     typeRech: req.body.typeRech,
     cin: req.body.cin,
-    firstName: req.body.firstName,
-    lastName: req.body.lastName,
-    adminId: req.body.adminId,
+    firstName:user.firstName,
+    lastName:user.lastName,
+    adminId: decoded._id,
     status: req.body.status,
     listeId: req.body.listeId,
     historiqueRech: req.body.historiqueRech,
