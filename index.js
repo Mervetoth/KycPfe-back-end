@@ -9,6 +9,7 @@ const productController = require("./controllers/productController");
 const rechercheController = require("./controllers/rechercheController");
 const ResultatCorr = require("./controllers/ResultatCorrController");
 const paysController = require("./controllers/paysController");
+const notif = require("./controllers/notificationController");
 
 const dotenv = require("dotenv");
 const multer = require("multer");
@@ -36,7 +37,7 @@ const url = "mongodb://127.0.0.1:27017/kycApp";
 })();
 //********************Route Middlewares********************//
 app.use("/api/user", userController);
-app.use("/api/admin", adminController,productController,rechercheController,ResultatCorr,paysController);
+app.use("/api/admin", adminController,productController,rechercheController,notif,ResultatCorr,paysController,);
 //********************Swagger********************//
 const swaggerJsDoc = require("swagger-jsdoc");
 const swaggerUi = require("swagger-ui-express");
