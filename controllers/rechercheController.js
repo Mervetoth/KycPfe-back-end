@@ -4,6 +4,8 @@ const joi = require("@hapi/joi");
 const Admin = require("../model/Admin");
 const User = require("../model/User");
 const jwt_decode = require("jwt-decode");
+const {authorization} = require("../functions & middelwares/authorization");
+
 const {
     ajouterRechercheValidation
 } = require("../functions & middelwares/validation");
@@ -31,17 +33,17 @@ const {
  */
 
 /**********************************ajouterRecherche**********************************/
-router.post("/ajouterRecherche", async (req, res) => {
+router.post("/ajouterRecherche", authorization("ADMIN"), async (req, res) => {
   const authHeader = req.headers["authorization"];
   const token = authHeader && authHeader.split(" ")[1];
   if (!token) {
     res.status(400).json("Token is not found");
   } else {
     const decoded = jwt_decode(token);
-    
-      const admin = await Admin.findById(decoded._id, "-password");}
+    console.log("decoded")
+      const admin = await Admin.findById(decoded._id, "-password");
   //**let's validate the data before we make a Recherche**//
-
+ 
   const { error } = ajouterRechercheValidation(req.body);
   if (error) return res.status(400).json(error.details[0].message);
 
@@ -82,7 +84,7 @@ if (!user) return res.status(400).json("User with this cin doesn't exists .");
     res.json({ result });
   } catch (err) {
     res.status(400).json(err);
-  }
+  }}
 });
 /**
  * @swagger
