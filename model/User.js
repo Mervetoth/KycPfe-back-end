@@ -24,19 +24,19 @@ const userSchema = new mongoose.Schema({
     min: 6,
     max: 1024,
   },
-  permissions: [{
-    type: String,
-    required:true,
-}],
+  permissions: [
+    {
+      type: String,
+      required: true,
+    },
+  ],
   pays_id: {
     type: String,
     required: true,
- 
   },
   prod_id: {
     type: String,
     required: true,
-   
   },
   birthDate: {
     type: String,
@@ -60,11 +60,11 @@ const userSchema = new mongoose.Schema({
   telNumber: {
     type: String,
     required: true,
-    length:8
-  }
-  ,tokenMail:{
-    type:String,
-    required:false,
-}
+    length: 8,
+  },
+  tokenMail: {
+    type: String,
+    required: false,
+  },
 });
 module.exports = mongoose.model("User", userSchema);

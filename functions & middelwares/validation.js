@@ -19,8 +19,8 @@ const registerValidationUser = (data) => {
     telNumber: joi.string().length(8).required(),
     email: joi.string().min(6).required().email(),
     prod_id: joi.string().required(),
-    pays_id: joi.string().required(), 
-    birthDate:joi.date().required(),
+    pays_id: joi.string().required(),
+    birthDate: joi.date().required(),
     adresse: joi.string().min(8).required(),
     cin: joi.string().min(8).required(),
     password: joi.string().min(6).required(),
@@ -56,7 +56,6 @@ const ajouterRechercheValidation = (data) => {
   return joi.validate(data, schema);
 };
 
-
 const ajouterNotifValidation = (data) => {
   const schema = {
     title: joi.string().required(),
@@ -65,8 +64,7 @@ const ajouterNotifValidation = (data) => {
   return joi.validate(data, schema);
 };
 
-
-module.exports.ajouterNotifValidation= ajouterNotifValidation;
+module.exports.ajouterNotifValidation = ajouterNotifValidation;
 module.exports.registerValidationAdmin = registerValidationAdmin;
 module.exports.registerValidationUser = registerValidationUser;
 module.exports.ajouterProduitValidation = ajouterProduitValidation;

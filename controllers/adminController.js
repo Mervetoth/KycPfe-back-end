@@ -5,9 +5,15 @@ const bcrypt = require("bcryptjs");
 const joi = require("@hapi/joi");
 const sendEmail = require("../functions & middelwares/sendEmail");
 const sendFile = require("../functions & middelwares/upload");
-const {registerValidationAdmin,loginValidation,} = require("../functions & middelwares/validation");
-const {generatetoken,expiredToken} = require("../functions & middelwares/generate & verifyToken");
-const {authorization} = require("../functions & middelwares/authorization");
+const {
+  registerValidationAdmin,
+  loginValidation,
+} = require("../functions & middelwares/validation");
+const {
+  generatetoken,
+  expiredToken,
+} = require("../functions & middelwares/generate & verifyToken");
+const { authorization } = require("../functions & middelwares/authorization");
 
 let Admin_tokenList = [];
 /**
@@ -204,14 +210,15 @@ router.post("/profilePhoto", async (req, res, next) => {
       //********************Upload********************
       var path = require("path");
       originPath = path.resolve(`uploads`);
-      if(path.extname(req.file.originalname)===('.png')||('.jpg'))
-      { const filePath = originPath + `/${decoded._id}`;
-      sendFile(req.file, filePath);
-      admin.avatar = filePath + `/${Date.now()}${req.file.originalname}`;
-      admin.save();
-      res.json({ data: admin });
-    }else{
-          res.status(400).json("the extension must be png or jpg")}
+      if (path.extname(req.file.originalname) === ".png" || ".jpg") {
+        const filePath = originPath + `/${decoded._id}`;
+        sendFile(req.file, filePath);
+        admin.avatar = filePath + `/${Date.now()}${req.file.originalname}`;
+        admin.save();
+        res.json({ data: admin });
+      } else {
+        res.status(400).json("the extension must be png or jpg");
+      }
     } catch (err) {
       res.status(400).json("id is not found");
     }
@@ -328,29 +335,27 @@ router.get(
  *         description: Created
  */
 //********************ListingUser********************//
-router.get(
-  "/listingUser",
-  authorization("ADMIN"),
-  async (req, res, next) => {
-    let users;
-    try {
-      const { page = 1, limit = 2 } = req.query;
-      users = await User.find({}, "-password")
-        .limit(limit * 1)
-        .skip((page - 1) * limit); 
-         
-  
-          res.status(403).json("There is no users !");
-       
-      const count = await User.count();
-      const nbpage = Math.ceil(count / limit);
-      res.json({users: users.map((user) => user.toObject({ getters: true })),count,nbpage,
-      });
-    } catch (err) {
-      res.status(400).json(err);
-    }
+router.get("/listingUser", authorization("ADMIN"), async (req, res, next) => {
+  let users;
+  try {
+    const { page = 1, limit = 2 } = req.query;
+    users = await User.find({}, "-password")
+      .limit(limit * 1)
+      .skip((page - 1) * limit);
+
+    res.status(403).json("There is no users !");
+
+    const count = await User.count();
+    const nbpage = Math.ceil(count / limit);
+    res.json({
+      users: users.map((user) => user.toObject({ getters: true })),
+      count,
+      nbpage,
+    });
+  } catch (err) {
+    res.status(400).json(err);
   }
-);
+});
 /**
  * @swagger
  * /api/admin/listingAll:
@@ -367,23 +372,27 @@ router.get(
  *         description: Created
  */
 //********************ListingAll********************//
-router.get("/listingAll", authorization(["SUPERADMIN"]), async (req, res, next) => {
-  let users;
-  let admins;
-  try {
-    const { page = 1, limit = 2 } = req.query;
-    admins = await Admin.find({}, "-password");
-    users = await Admin.find({}, "-password")
-      .limit(limit * 1)
-      .skip((page - 1) * limit);
-  } catch (err) {
-    res.status(400).json(err);
+router.get(
+  "/listingAll",
+  authorization(["SUPERADMIN"]),
+  async (req, res, next) => {
+    let users;
+    let admins;
+    try {
+      const { page = 1, limit = 2 } = req.query;
+      admins = await Admin.find({}, "-password");
+      users = await Admin.find({}, "-password")
+        .limit(limit * 1)
+        .skip((page - 1) * limit);
+    } catch (err) {
+      res.status(400).json(err);
+    }
+    admins: admins.map((admin) => admin.toObject({ getters: true }));
+    users: users.map((user) => user.toObject({ getters: true }));
+    let x = [admins, users];
+    res.json(x);
   }
-  admins: admins.map((admin) => admin.toObject({ getters: true }));
-  users: users.map((user) => user.toObject({ getters: true }));
-  let x = [admins, users];
-  res.json(x);
-});
+);
 /**
  * @swagger
  * /api/admin/logout:

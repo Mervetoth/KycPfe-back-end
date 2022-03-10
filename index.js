@@ -37,7 +37,15 @@ const url = "mongodb://127.0.0.1:27017/kycApp";
 })();
 //********************Route Middlewares********************//
 app.use("/api/user", userController);
-app.use("/api/admin", adminController,productController,rechercheController,notif,ResultatCorr,paysController,);
+app.use(
+  "/api/admin",
+  adminController,
+  productController,
+  rechercheController,
+  notif,
+  ResultatCorr,
+  paysController
+);
 //********************Swagger********************//
 const swaggerJsDoc = require("swagger-jsdoc");
 const swaggerUi = require("swagger-ui-express");

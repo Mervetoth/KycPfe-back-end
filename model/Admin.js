@@ -44,8 +44,10 @@ const adminSchema = new mongoose.Schema({
     type: String,
     required: false,
   },
-  avatar: [{
-    type: String,
-  }],
+  avatar: [
+    {
+      type: String,
+    },
+  ],
 });
 module.exports = mongoose.model("Admin", adminSchema);

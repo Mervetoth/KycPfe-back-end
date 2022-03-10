@@ -34,7 +34,6 @@ router.post("/ajouterResultatCorrespondaces", async (req, res) => {
   const { error } = ajouerResultatCorrespondacesValidation(req.body);
   if (error) return res.status(400).json(error.details[0].message);
 
-
   //******************** create new Match Result ********************//
   const resultatCorr = new ResultatCorr({
     userId: req.body.userId,
@@ -45,7 +44,7 @@ router.post("/ajouterResultatCorrespondaces", async (req, res) => {
 
     const user = await User.findById(req.body.userId);
     if (!user) return res.status(400).json("User is not found !");
-  
+
     const result = {
       status: "Created Match Result  .",
       userId: resultatCorr.userId,
@@ -162,7 +161,9 @@ router.get("/listingResultatCorrespondaces", async (req, res, next) => {
     res.status(400).json(err);
   }
   res.json({
-    resultatCorrespondacess: resultatCorrespondacess.map((resultatCorr) => resultatCorr.toObject({ getters: true })),
+    resultatCorrespondacess: resultatCorrespondacess.map((resultatCorr) =>
+      resultatCorr.toObject({ getters: true })
+    ),
   });
 });
 /**
@@ -188,11 +189,7 @@ router.delete("/deleteResultatCorrespondaces", async (req, res, next) => {
   try {
     await resultatCorr.remove();
   } catch (err) {
-    res.json(
-      "Something went wrong, could not delete Match Result .",
-      500
-    );
-   
+    res.json("Something went wrong, could not delete Match Result .", 500);
   }
   res.status(200).json({ message: "Deleted Match Result ." });
 });

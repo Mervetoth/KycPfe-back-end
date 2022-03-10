@@ -8,17 +8,18 @@ const generatetoken = (data, exp) => {
 //********************Expired token********************//
 const expiredToken = (token) => {
   return (res) => {
-  try {
-    const decoded = jwt_decode(token);
-    timeNow = new Date();
-    console.log(moment.unix(decoded.exp).toDate());
-    if (moment.unix(decoded.exp).toDate() < timeNow) {
-      return res.status(403).json("expired token");
+    try {
+      const decoded = jwt_decode(token);
+      timeNow = new Date();
+      console.log(moment.unix(decoded.exp).toDate());
+      if (moment.unix(decoded.exp).toDate() < timeNow) {
+        return res.status(403).json("expired token");
+      }
+    } catch (error) {
+      console.log(error, "expiredToken error");
     }
-  } catch (error) {
-    console.log(error, "expiredToken error");
-  }
-};}
+  };
+};
 module.exports = function (req, res, next) {
   const token = req.header("auth-token");
   if (!token) return res.status(401).json("acces denied");
