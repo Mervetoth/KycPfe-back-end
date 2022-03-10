@@ -26,7 +26,7 @@ const {ajouterProduitValidation} = require("../functions & middelwares/validatio
  */
 
 /**********************************ajouterProduit**********************************/
-router.post("/ajouterProduit", async (req, res) => {
+router.post("/ajouterProduit",authorization(["ADMIN"]),    async (req, res) => {
   //**let's validate the data before we make a produit**//
 
   const { error } = ajouterProduitValidation(req.body);
@@ -76,7 +76,7 @@ router.post("/ajouterProduit", async (req, res) => {
  */
 
 //******************************getByIdProduit******************************//
-router.post("/getByIdProduit", async (req, res) => {
+router.post("/getByIdProduit",authorization(["ADMIN"]), async (req, res) => {
 //**let's validate the data before we make a produit**//
 const schema = joi.object({
   id: joi.string().required(),
@@ -124,7 +124,7 @@ return res.status(400).json("Product is not found")}
  *         description: Updated
  */
 //********************UpdateAdmin********************//
-router.patch("/updateProduit", async (req, res, next) => {
+router.patch("/updateProduit",authorization(["ADMIN"]), async (req, res, next) => {
   try {
     const produitId = req.query.id;
     const produit = await Produit.findById(produitId);
@@ -153,7 +153,7 @@ router.patch("/updateProduit", async (req, res, next) => {
  *         description: Listed
  */
 //********************listingProduit********************//
-router.get("/listingProduit", async (req, res, next) => {
+router.get("/listingProduit",authorization(["ADMIN"]), async (req, res, next) => {
   let produits;
   try {
     const { page = 1, limit = 2 } = req.query;
@@ -182,7 +182,7 @@ router.get("/listingProduit", async (req, res, next) => {
  *       200:
  *         description: Deleted
  */
-router.delete("/deleteProduit", async (req, res, next) => {
+router.delete("/deleteProduit",authorization(["ADMIN"]), async (req, res, next) => {
   const produitId = req.query.id;
   const produit = await Produit.findById(produitId);
   if (!produit) res.json("Product is not found .");

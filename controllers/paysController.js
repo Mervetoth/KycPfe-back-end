@@ -4,6 +4,7 @@ const jwt = require("jsonwebtoken");
 //const {ajouterPaysValidation}= require("../functions & middlewares/validation");
 const Pays =require("../model/Pays");
 
+const {authorization} = require("../functions & middelwares/authorization");
 
 const ajouterPaysValidation = (data) => {
     const schema = {
@@ -16,7 +17,7 @@ const ajouterPaysValidation = (data) => {
   
 //**********Ajouter pays *******************************/
 
-router.post("/ajouterPays",async(req,res)=>{
+router.post("/ajouterPays", authorization(["ADMIN"]),async(req,res)=>{
 
 // validation de data 
 
@@ -51,7 +52,7 @@ res.status(400).json(error);
 
 
 /******************************consulterPays******************************/
-router.post("/consulterPays", async (req, res) => {
+router.post("/consulterPays", authorization(["ADMIN"]), async (req, res) => {
     //**let's validate the data before we make a pays**//
     const schema = joi.object({
         id: joi.string().required(),
@@ -105,7 +106,7 @@ router.post("/consulterPays", async (req, res) => {
  *         description: Created
  */
 //********************Updatepays********************//
-router.patch("/updatePays", async (req, res, next) => {
+router.patch("/updatePays",authorization(["ADMIN"]), async (req, res, next) => {
   
   try {
     const paysId = req.query.id;
@@ -119,10 +120,6 @@ router.patch("/updatePays", async (req, res, next) => {
   }
 
 });
-
-
-
-
 
 /**
  * @swagger
@@ -141,7 +138,7 @@ router.patch("/updatePays", async (req, res, next) => {
  */
 //********************listingPays********************//
 router.get(
-    "/listingPays",
+    "/listingPays",authorization(["ADMIN"]),
     async (req, res, next) => {
       let pays;
       try {
@@ -161,7 +158,7 @@ router.get(
 
 
 
-  router.delete("/deletePays", async (req, res, next) => {
+  router.delete("/deletePays",authorization(["ADMIN"]), async (req, res, next) => {
     const paysId = req.query.id;
     const pays = await Pays.findById(paysId);
     if (!pays)res.json("country is not found .")

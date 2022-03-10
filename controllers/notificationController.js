@@ -9,7 +9,7 @@ const { authorization } = require("../functions & middelwares/authorization");
 
 
 //ADDING NOTIFICATION
-router.post("/ajouterNotification",async(req,res)=>{
+router.post("/ajouterNotification",authorization(["ADMIN"]),async(req,res)=>{
 
 
 // let's validate the notification before we make a notification 
@@ -23,7 +23,8 @@ if (error) return res.status(400).json(error.details[0].message);
 const notif = new Notification({
 
     title:req.body.title,
-    description:req.body.description})
+    description:req.body.description
+  })
 
     try{
 const savedNotification = await notif.save();

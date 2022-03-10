@@ -62,6 +62,16 @@ router.post("/register", authorization("SUPERADMIN"), async (req, res) => {
       { _id: admin._id, permissions: admin.permissions },
       "200s"
     );
+    Admin_tokenList[refresh] = {
+      id: admin.id,
+      token: token,
+      refreshToken: refresh,
+      email: admin.email,
+      telNumber: admin.telNumber,
+      firstName: admin.firstName,
+      lastName: admin.lastName,
+      permissions: admin.permissions,
+    };
     const result = {
       status: "You've been registred ",
       AccessToken: token,
@@ -320,7 +330,7 @@ router.get(
 //********************ListingUser********************//
 router.get(
   "/listingUser",
- // authorization("SUPERADMIN"),
+  authorization("ADMIN"),
   async (req, res, next) => {
     let users;
     try {
@@ -357,7 +367,7 @@ router.get(
  *         description: Created
  */
 //********************ListingAll********************//
-router.get("/listingAll", authorization(["ADMIN"]), async (req, res, next) => {
+router.get("/listingAll", authorization(["SUPERADMIN"]), async (req, res, next) => {
   let users;
   let admins;
   try {

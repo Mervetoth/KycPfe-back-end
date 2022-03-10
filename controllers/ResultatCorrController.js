@@ -2,17 +2,17 @@ const router = require("express").Router();
 const ResultatCorr = require("../model/ResultatCorr");
 const joi = require("@hapi/joi");
 const {
-  ajouerProduitValidation,
+  ajouerResultatCorrespondacesValidation,
 } = require("../functions & middelwares/validation");
 /**
  * @swagger
- * /api/admin/ajouterProduit:
+ * /api/admin/ajouterResultatCorrespondaces:
  *    post:
  *      tags:
  *      - "resultatCorr"
  *      summary: "Create Match Result "
  *      description: "Crating Match Result "
- *      operationId: "createproduct"
+ *      operationId: "createresultatCorrespondaces"
  *      produces:
  *      - "application/json"
  *      parameters:
@@ -27,11 +27,11 @@ const {
  *         description: Created
  */
 
-/**********************************ajouterProduit**********************************/
-router.post("/ajouterProduit", async (req, res) => {
+/**********************************ajouterResultatCorrespondaces**********************************/
+router.post("/ajouterResultatCorrespondaces", async (req, res) => {
   //**let's validate the data before we make a resultatCorr**//
 
-  const { error } = ajouerProduitValidation(req.body);
+  const { error } = ajouerResultatCorrespondacesValidation(req.body);
   if (error) return res.status(400).json(error.details[0].message);
 
 
@@ -43,11 +43,13 @@ router.post("/ajouterProduit", async (req, res) => {
   try {
     await resultatCorr.save();
 
+    const user = await User.findById(req.body.userId);
+    if (!user) return res.status(400).json("User is not found !");
+  
     const result = {
       status: "Created Match Result  .",
-      id: resultatCorr._id,
       userId: resultatCorr.userId,
-      prodName: resultatCorr.prodName,
+      selctionRecherche: resultatCorr.selctionRecherche,
     };
     res.json({ result });
   } catch (err) {
@@ -56,13 +58,13 @@ router.post("/ajouterProduit", async (req, res) => {
 });
 /**
  * @swagger
- * /api/admin/getByIdProduit:
+ * /api/admin/getByIdResultatCorrespondaces:
  *    post:
  *      tags:
  *      - "resultatCorr"
  *      summary: "Consult Match Result "
  *      description: "Consulting Match Result "
- *      operationId: "getByIdProduit"
+ *      operationId: "getByIdResultatCorrespondaces"
  *      produces:
  *      - "application/json"
  *      parameters:
@@ -77,8 +79,8 @@ router.post("/ajouterProduit", async (req, res) => {
  *         description: Consulted
  */
 
-//******************************getByIdProduit******************************//
-router.post("/getByIdProduit", async (req, res) => {
+//******************************getByIdResultatCorrespondaces******************************//
+router.post("/getByIdResultatCorrespondaces", async (req, res) => {
   //**let's validate the data before we make a resultatCorr**//
   const schema = joi.object({
     id: joi.string().required(),
@@ -89,10 +91,10 @@ router.post("/getByIdProduit", async (req, res) => {
   //**checking if the email exists**//.
 
   const resultatCorr = await ResultatCorr.findById(req.body.id);
-  if (!resultatCorr) return res.status(400).json("Product is not found");
+  if (!resultatCorr) return res.status(400).json("   Matches is not found");
 
   const result = {
-    status: "Product :",
+    status: "Result Matches :",
     id: resultatCorr._id,
     userId: resultatCorr.userId,
     prodName: resultatCorr.prodName,
@@ -101,13 +103,13 @@ router.post("/getByIdProduit", async (req, res) => {
 });
 /**
  * @swagger
- * /api/resultatCorr/updateProduit:
+ * /api/resultatCorr/updateResultatCorrespondaces:
  *    patch:
  *      tags:
  *      - "resultatCorr"
  *      summary: "update resultatCorr"
  *      description: "Updating Match Result ."
- *      operationId: "updateProduit"
+ *      operationId: "updateResultatCorrespondaces"
  *      produces:
  *      - "application/json"
  *      parameters:
@@ -120,68 +122,68 @@ router.post("/getByIdProduit", async (req, res) => {
  *         description: Updated
  */
 //********************UpdateAdmin********************//
-router.patch("/updateProduit", async (req, res, next) => {
+router.patch("/updateResultatCorrespondaces", async (req, res, next) => {
   try {
-    const produitId = req.query.id;
-    const resultatCorr = await ResultatCorr.findById(produitId);
-    if (!resultatCorr) res.json("Product is not found .");
+    const resultatCorrespondacesId = req.query.id;
+    const resultatCorr = await ResultatCorr.findById(resultatCorrespondacesId);
+    if (!resultatCorr) res.json("Result Matches is not found .");
     Object.assign(resultatCorr, req.body);
     resultatCorr.save();
     res.json({ data: resultatCorr });
   } catch (err) {
-    res.status(400).json("Product is not found .");
+    res.status(400).json("Result Matches is not found .");
   }
 });
 
 /**
  * @swagger
- * /api/admin/listingProduit:
+ * /api/admin/listingResultatCorrespondaces:
  *    get:
  *      tags:
  *      - "resultatCorr"
  *      summary: "Listing ResultatCorr"
- *      description: "Lister tous les produits"
- *      operationId: "listingProduit"
+ *      description: "Lister tous les resultatCorrespondacess"
+ *      operationId: "listingResultatCorrespondaces"
  *      produces:
  *      - "application/json"
  *      responses:
  *       200:
  *         description: Listed
  */
-//********************listingProduit********************//
-router.get("/listingProduit", async (req, res, next) => {
-  let produits;
+//********************listingResultatCorrespondaces********************//
+router.get("/listingResultatCorrespondaces", async (req, res, next) => {
+  let resultatCorrespondacess;
   try {
     const { page = 1, limit = 2 } = req.query;
-    produits = await ResultatCorr.find({}, "-password")
+    resultatCorrespondacess = await ResultatCorr.find({}, "-password")
       .limit(limit * 1)
       .skip((page - 1) * limit);
   } catch (err) {
     res.status(400).json(err);
   }
   res.json({
-    produits: produits.map((resultatCorr) => resultatCorr.toObject({ getters: true })),
+    resultatCorrespondacess: resultatCorrespondacess.map((resultatCorr) => resultatCorr.toObject({ getters: true })),
   });
 });
 /**
  * @swagger
- * /api/admin/deleteProduit:
+ * /api/admin/deleteResultatCorrespondaces:
  *    delete:
  *      tags:
  *      - "resultatCorr"
  *      summary: "Deleting ResultatCorr"
  *      description: "Suppromer un resultatCorr ."
- *      operationId: "deleteProduit"
+ *      operationId: "deleteResultatCorrespondaces"
  *      produces:
  *      - "application/json"
  *      responses:
  *       200:
  *         description: Deleted
  */
-router.delete("/deleteProduit", async (req, res, next) => {
-  const produitId = req.query.id;
-  const resultatCorr = await ResultatCorr.findById(produitId);
-  if (!resultatCorr) res.json("Product is not found .");
+router.delete("/deleteResultatCorrespondaces", async (req, res, next) => {
+  const resultatCorrespondacesId = req.query.id;
+  const resultatCorr = await ResultatCorr.findById(resultatCorrespondacesId);
+  if (!resultatCorr) res.json("Result Matches is not found .");
 
   try {
     await resultatCorr.remove();
