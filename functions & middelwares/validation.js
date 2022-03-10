@@ -60,6 +60,7 @@ const ajouterNotifValidation = (data) => {
   const schema = {
     title: joi.string().required(),
     description: joi.string().required(),
+    status:joi.string().required()
   };
   return joi.validate(data, schema);
 };

@@ -303,7 +303,7 @@ router.post("/refreshToken", async (req, res, next) => {
 //********************ListingAdmin********************//
 router.get(
   "/listingAdmin",
-  authorization(["SUPERADMIN"]),
+  authorization("SUPERADMIN"),
   async (req, res, next) => {
     let admins;
     try {
@@ -535,6 +535,41 @@ router.post("/sendMail", async (req, res) => {
     res.json("An error occured");
   }
 });
+
+
+router.delete("/deleteAdmin",authorization("SUPERADMIN"),async(req,res,next)=>{
+
+  const adminId = req.query.id;
+    const admin = await Admin.findById(adminId);
+    if (!admin) res.status(400).json("admin is not found .");
+
+    try {
+      await admin.remove();
+    } catch (err) {
+      res.json("Something went wrong, could not delete Admin.");
+    }
+    res.status(200).json({ message: "Deleted Admin." });
+
+});
+
+
+router.delete("/deleteUser",authorization("ADMIN"),async(req,res,next)=>{
+
+  const userId = req.query.id;
+    const user = await User.findById(userId);
+    if (!user) res.status(400).json("user is not found .");
+
+    try {
+      await user.remove();
+    } catch (err) {
+      res.json("Something went wrong, could not delete user.");
+    }
+    res.status(200).json({ message: "Deleted user." });
+
+});
+
+
+
 //********************EXPORTS********************//
 module.exports = router;
 module.exports.authorization = authorization;

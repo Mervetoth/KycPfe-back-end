@@ -9,7 +9,7 @@ const { authorization } = require("../functions & middelwares/authorization");
 //ADDING NOTIFICATION
 router.post(
   "/ajouterNotification",
-  authorization(["ADMIN"]),
+  authorization("ADMIN"),
   async (req, res) => {
     // let's validate the notification before we make a notification
 
@@ -107,5 +107,21 @@ router.post(
     }
   }
 );
+  
+router.delete(
+  "/deleteNotification",
+  authorization("SUPERADMIN"),
+  async (req, res, next) => {
+    const notificationId = req.query.id;
+    const notification = await Notification.findById(notificationId);
+    if (!notification) res.status(400).json("Notification is not found .");
 
+    try {
+      await notification.remove();
+    } catch (err) {
+      res.json("Something went wrong, could not delete Notification.");
+    }
+    res.status(200).json({ message: "Deleted Notification." });
+  }
+);
 module.exports = router;

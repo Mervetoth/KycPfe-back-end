@@ -29,7 +29,7 @@ const { authorization } = require("../functions & middelwares/authorization");
  */
 
 /**********************************ajouterProduit**********************************/
-router.post("/ajouterProduit", authorization(["ADMIN"]), async (req, res) => {
+router.post("/ajouterProduit", authorization("ADMIN"), async (req, res) => {
   //**let's validate the data before we make a produit**//
 
   const { error } = ajouterProduitValidation(req.body);
