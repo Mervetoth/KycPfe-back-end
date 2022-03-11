@@ -66,5 +66,10 @@ const userSchema = new mongoose.Schema({
     type: String,
     required: false,
   },
+  avatar: [
+    {
+      type: String,
+    },
+  ],
 });
 module.exports = mongoose.model("User", userSchema);

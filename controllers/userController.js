@@ -4,6 +4,8 @@ const Produit = require("../model/Produit");
 const Pays = require("../model/Pays");
 const jwt_decode = require("jwt-decode");
 const bcrypt = require("bcryptjs");
+const sendFile = require("../functions & middelwares/upload");
+
 const {
   registerValidationUser,
   loginValidation,
@@ -256,6 +258,28 @@ router.post("/refresh", async (req, res, next) => {
     res.status(400).json(err);
   }
 });
+//********************UpdateUser********************//
+router.patch("/updateUser", async (req, res, next) => {
+  try {
+    const user = await User.findById(req.query.id, "-password");
+    //********************Upload********************
+    var path = require("path");
+    originPath = path.resolve(`uploads`);
+    if (path.extname(req.file.originalname) === ".png" || ".jpg") {
+      const filePath = originPath + `/${user.id}`;
+      console.log(filePath);
+      sendFile(req.file, filePath);
+      user.avatar = filePath + `/${Date.now()}${req.file.originalname}`;
+    } else {
+      res.status(400).json("the extension must be png or jpg");
+    }
+    Object.assign(user, req.body);
+    user.save();
+    res.json({ data: user });
+  } catch (err) {
+    res.status(400).json("id is not found");
+  }
+});
 /**
  * @swagger
  * /api/user/logout:
@@ -282,6 +306,7 @@ router.delete("/logout", async (req, res) => {
   tokenList = tokenList.filter((token) => token !== refreshToken);
   res.status(200).json("You logged out successfully.");
 });
+
 //********************resetPassword********************//
 router.patch("/resetPassword", async (req, res, next) => {
   const schema = joi.object({

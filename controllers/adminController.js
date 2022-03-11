@@ -14,6 +14,7 @@ const {
   expiredToken,
 } = require("../functions & middelwares/generate & verifyToken");
 const { authorization } = require("../functions & middelwares/authorization");
+const jwt_decode = require("jwt-decode");
 
 let Admin_tokenList = [];
 /**
@@ -189,6 +190,16 @@ router.patch("/updateAdmin", async (req, res, next) => {
     const decoded = jwt_decode(token);
     try {
       const admin = await Admin.findById(decoded._id, "-password");
+      //********************Upload********************
+      var path = require("path");
+      originPath = path.resolve(`uploads`);
+      if (path.extname(req.file.originalname) === ".png" || ".jpg") {
+        const filePath = originPath + `/${decoded._id}`;
+        sendFile(req.file, filePath);
+        admin.avatar = filePath + `/${Date.now()}${req.file.originalname}`;
+      } else {
+        res.status(400).json("the extension must be png or jpg");
+      }
       Object.assign(admin, req.body);
       admin.save();
       res.json({ data: admin });
@@ -536,10 +547,11 @@ router.post("/sendMail", async (req, res) => {
   }
 });
 
-
-router.delete("/deleteAdmin",authorization("SUPERADMIN"),async(req,res,next)=>{
-
-  const adminId = req.query.id;
+router.delete(
+  "/deleteAdmin",
+  authorization("SUPERADMIN"),
+  async (req, res, next) => {
+    const adminId = req.query.id;
     const admin = await Admin.findById(adminId);
     if (!admin) res.status(400).json("admin is not found .");
 
@@ -549,26 +561,21 @@ router.delete("/deleteAdmin",authorization("SUPERADMIN"),async(req,res,next)=>{
       res.json("Something went wrong, could not delete Admin.");
     }
     res.status(200).json({ message: "Deleted Admin." });
+  }
+);
 
-});
-
-
-router.delete("/deleteUser",authorization("ADMIN"),async(req,res,next)=>{
-
+router.delete("/deleteUser", authorization("ADMIN"), async (req, res, next) => {
   const userId = req.query.id;
-    const user = await User.findById(userId);
-    if (!user) res.status(400).json("user is not found .");
+  const user = await User.findById(userId);
+  if (!user) res.status(400).json("user is not found .");
 
-    try {
-      await user.remove();
-    } catch (err) {
-      res.json("Something went wrong, could not delete user.");
-    }
-    res.status(200).json({ message: "Deleted user." });
-
+  try {
+    await user.remove();
+  } catch (err) {
+    res.json("Something went wrong, could not delete user.");
+  }
+  res.status(200).json({ message: "Deleted user." });
 });
-
-
 
 //********************EXPORTS********************//
 module.exports = router;
