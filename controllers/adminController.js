@@ -208,33 +208,7 @@ router.patch("/updateAdmin", async (req, res, next) => {
     }
   }
 });
-//********************chagerPhotodeProfile********************//
-router.post("/profilePhoto", async (req, res, next) => {
-  const authHeader = req.headers["authorization"];
-  const token = authHeader && authHeader.split(" ")[1];
-  if (!token) {
-    res.status(400).json("Token is not found");
-  } else {
-    const decoded = jwt_decode(token);
-    try {
-      const admin = await Admin.findById(decoded._id, "-password");
-      //********************Upload********************
-      var path = require("path");
-      originPath = path.resolve(`uploads`);
-      if (path.extname(req.file.originalname) === ".png" || ".jpg") {
-        const filePath = originPath + `/${decoded._id}`;
-        sendFile(req.file, filePath);
-        admin.avatar = filePath + `/${Date.now()}${req.file.originalname}`;
-        admin.save();
-        res.json({ data: admin });
-      } else {
-        res.status(400).json("the extension must be png or jpg");
-      }
-    } catch (err) {
-      res.status(400).json("id is not found");
-    }
-  }
-});
+
 /**
  * @swagger
  * /api/admin/refreshToken:
@@ -422,7 +396,7 @@ router.get(
  *        required: true
  *      responses:
  *       200:
- *         description: Created
+ *         description: Logged OUt
  */
 //********************LogOut********************//
 router.delete("/logout", async (req, res) => {
@@ -435,6 +409,28 @@ router.delete("/logout", async (req, res) => {
     res.status(200).json("You logged out successfully.");
   }
 });
+/**
+ * @swagger
+ * /api/admin/resetPassword:
+ *    patch:
+ *      tags:
+ *      - "admin"
+ *      summary: "Reset admin's password "
+ *      description: "This will reset admin's password ."
+ *      operationId: "resetPassword"
+ *      produces:
+ *      - "application/json"
+ *      parameters:
+ *      - in: "body"
+ *        name: "body"
+ *        description: "Password is changed !"
+ *        required: true
+ *   	  security:
+ *	     - bearerAuth: []
+ *      responses:
+ *       200:
+ *         description: Successful operation
+ */
 //********************resetPassword********************//
 router.patch("/resetPassword", async (req, res, next) => {
   const schema = joi.object({
@@ -471,6 +467,28 @@ router.patch("/resetPassword", async (req, res, next) => {
     }
   }
 });
+/**
+ * @swagger
+ * /api/admin/newPasswordReset:
+ *    post:
+ *      tags:
+ *      - "admin"
+ *      summary: "Reset admin's password "
+ *      description: "This will reset forgotten admin's password ."
+ *      operationId: "newPasswordReset"
+ *      produces:
+ *      - "application/json"
+ *      parameters:
+ *      - in: "body"
+ *        name: "body"
+ *        description: "New password saved !"
+ *        required: true
+ *   	  security:
+ *	     - bearerAuth: []
+ *      responses:
+ *       200:
+ *         description: Successful operation
+ */
 //********************newPasswordReset********************//
 router.post("/newPasswordReset", async (req, res) => {
   /////////////validator///////////
@@ -523,6 +541,28 @@ router.post("/newPasswordReset", async (req, res) => {
     }
   }
 });
+/**
+ * @swagger
+ * /api/admin/sendMail:
+ *    post:
+ *      tags:
+ *      - "admin"
+ *      summary: "Send email ."
+ *      description: "This will send email ."
+ *      operationId: "sendMail"
+ *      produces:
+ *      - "application/json"
+ *      parameters:
+ *      - in: "body"
+ *        name: "body"
+ *        description: " Sent Email !"
+ *        required: true
+ *   	  security:
+ *	     - bearerAuth: []
+ *      responses:
+ *       200:
+ *         description: Successful operation
+ */
 //********************sendMail********************//
 router.post("/sendMail", async (req, res) => {
   try {
@@ -546,7 +586,28 @@ router.post("/sendMail", async (req, res) => {
     res.json("An error occured");
   }
 });
-
+/**
+ * @swagger
+ * /api/admin/deleteAdmin:
+ *    delete:
+ *      tags:
+ *      - "admin"
+ *      summary: "Delete Admin's account ."
+ *      description: "This will delete Admin's account  ."
+ *      operationId: "createAdmin"
+ *      produces:
+ *      - "application/json"
+ *      parameters:
+ *      - in: "body"
+ *        name: "body"
+ *        description: " Account deleted !"
+ *        required: true
+ *   	  security:
+ *	     - bearerAuth: []
+ *      responses:
+ *       200:
+ *         description: Deleted
+ */
 router.delete(
   "/deleteAdmin",
   authorization("SUPERADMIN"),
@@ -563,7 +624,28 @@ router.delete(
     res.status(200).json({ message: "Deleted Admin." });
   }
 );
-
+/**
+ * @swagger
+ * /api/admin/deleteUser:
+ *    delete:
+ *      tags:
+ *      - "admin"
+ *      summary: "Delete user's account ."
+ *      description: "This will delete user's account  ."
+ *      operationId: "deleteUser"
+ *      produces:
+ *      - "application/json"
+ *      parameters:
+ *      - in: "body"
+ *        name: "body"
+ *        description: " Account deleted !"
+ *        required: true
+ *   	  security:
+ *	     - bearerAuth: []
+ *      responses:
+ *       200:
+ *         description: Deleted
+ */
 router.delete("/deleteUser", authorization("ADMIN"), async (req, res, next) => {
   const userId = req.query.id;
   const user = await User.findById(userId);

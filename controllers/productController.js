@@ -121,7 +121,7 @@ router.post("/getByIdProduit", authorization(["ADMIN"]), async (req, res) => {
  *       200:
  *         description: Updated
  */
-//********************UpdateAdmin********************//
+//********************updateProduit********************//
 router.patch(
   "/updateProduit",
   authorization(["ADMIN"]),

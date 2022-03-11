@@ -28,7 +28,7 @@ let tokenList = [];
  *      - "user"
  *      summary: "Create user"
  *      description: "This can only be done by the token of the sueper user."
- *      operationId: "createAdmin"
+ *      operationId: "createUser"
  *      produces:
  *      - "application/json"
  *      parameters:
@@ -134,7 +134,7 @@ router.post("/register", authorization("ADMIN"), async (req, res) => {
  *        required: true
  *      responses:
  *        default:
- *          description: "successful operation"
+ *          description: "Successful operation"
  */
 //******************************Login******************************//
 router.post("/login", async (req, res) => {
@@ -209,7 +209,7 @@ router.post("/login", async (req, res) => {
  *        required: true
  *      responses:
  *       200:
- *         description: refreshed
+ *         description:Refreshed
  */
 //********************Update********************//
 router.post("/refresh", async (req, res, next) => {
@@ -258,6 +258,26 @@ router.post("/refresh", async (req, res, next) => {
     res.status(400).json(err);
   }
 });
+/**
+ * @swagger
+ * /api/user/updateUser:
+ *    patch:
+ *      tags:
+ *      - "user"
+ *      summary: "update User"
+ *      description: "This will update user's account."
+ *      operationId: "update user"
+ *      produces:
+ *      - "application/json"
+ *      parameters:
+ *      - in: "body"
+ *        name: "body"
+ *        description: "update user"
+ *        required: true
+ *      responses:
+ *       200:
+ *         description: Updated
+ */
 //********************UpdateUser********************//
 router.patch("/updateUser", async (req, res, next) => {
   try {
@@ -298,7 +318,7 @@ router.patch("/updateUser", async (req, res, next) => {
  *        required: true
  *      responses:
  *       200:
- *         description: Created
+ *         description: Logged out
  */
 //********************LogOut********************//
 router.delete("/logout", async (req, res) => {
@@ -306,7 +326,28 @@ router.delete("/logout", async (req, res) => {
   tokenList = tokenList.filter((token) => token !== refreshToken);
   res.status(200).json("You logged out successfully.");
 });
-
+/**
+ * @swagger
+ * /api/user/resetPassword:
+ *    patch:
+ *      tags:
+ *      - "user"
+ *      summary: "Reset users's password "
+ *      description: "This will reset user's password ."
+ *      operationId: "resetPassword"
+ *      produces:
+ *      - "application/json"
+ *      parameters:
+ *      - in: "body"
+ *        name: "body"
+ *        description: "Password is changed !"
+ *        required: true
+ *   	  security:
+ *	     - bearerAuth: []
+ *      responses:
+ *       200:
+ *         description: Successful operation
+ */
 //********************resetPassword********************//
 router.patch("/resetPassword", async (req, res, next) => {
   const schema = joi.object({
@@ -341,6 +382,29 @@ router.patch("/resetPassword", async (req, res, next) => {
     }
   }
 });
+
+/**
+ * @swagger
+ * /api/user/newPasswordReset:
+ *    post:
+ *      tags:
+ *      - "user"
+ *      summary: "Reset user's password "
+ *      description: "This will reset forgotten user's password ."
+ *      operationId: "newPasswordReset"
+ *      produces:
+ *      - "application/json"
+ *      parameters:
+ *      - in: "body"
+ *        name: "body"
+ *        description: "New password saved !"
+ *        required: true
+ *   	  security:
+ *	     - bearerAuth: []
+ *      responses:
+ *       200:
+ *         description: Successful operation
+ */
 //********************newPasswordReset********************//
 router.post("/newPasswordReset", async (req, res) => {
   /////////////validator///////////
@@ -393,6 +457,29 @@ router.post("/newPasswordReset", async (req, res) => {
     }
   }
 });
+
+/**
+ * @swagger
+ * /api/user/deleteUser:
+ *    delete:
+ *      tags:
+ *      - "user"
+ *      summary: "Delete user's account ."
+ *      description: "This will delete user's account  ."
+ *      operationId: "deleteUser"
+ *      produces:
+ *      - "application/json"
+ *      parameters:
+ *      - in: "body"
+ *        name: "body"
+ *        description: " Account deleted !"
+ *        required: true
+ *   	  security:
+ *	     - bearerAuth: []
+ *      responses:
+ *       200:
+ *         description: Deleted
+ */
 //********************sendMail********************//
 router.post("/sendMail", async (req, res) => {
   try {
