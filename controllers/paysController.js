@@ -15,6 +15,26 @@ const ajouterPaysValidation = (data) => {
 };
 
 //**********Ajouter pays *******************************/
+/**
+ * @swagger
+ * /api/admin/ajouterPays:
+ *    post:
+ *      tags:
+ *      - "admin"
+ *      summary: "Create country"
+ *      description: "This can only be done by the token of the superadmin."
+ *      operationId: "createCountry"
+ *      produces:
+ *      - "application/json"
+ *      parameters:
+ *      - in: "body"
+ *        name: "body"
+ *        description: "Created country"
+ *        required: true
+ *      responses:
+ *       200:
+ *         description: Created
+ */
 
 router.post("/ajouterPays", authorization(["ADMIN"]), async (req, res) => {
   // validation de data
@@ -45,6 +65,26 @@ router.post("/ajouterPays", authorization(["ADMIN"]), async (req, res) => {
 });
 
 /******************************consulterPays******************************/
+/**
+ * @swagger
+ * /api/admin/consulterPays:
+ *    post:
+ *      tags:
+ *      - "admin"
+ *      summary: "consulting countries"
+ *      description: "This can only be done by the token of the admin."
+ *      operationId: "conultedcountry"
+ *      produces:
+ *      - "application/json"
+ *      parameters:
+ *      - in: "body"
+ *        name: "body"
+ *        description: "Created user object"
+ *        required: true
+ *      responses:
+ *       200:
+ *         description: Created
+ */
 router.post("/consulterPays", authorization(["ADMIN"]), async (req, res) => {
   //**let's validate the data before we make a pays**//
   const schema = joi.object({
@@ -137,7 +177,26 @@ router.get("/listingPays", authorization(["ADMIN"]), async (req, res, next) => {
     pays: pays.map((pays) => pays.toObject({ getters: true })),
   });
 });
-
+/**
+ * @swagger
+ * /api/admin/deletePays:
+ *    post:
+ *      tags:
+ *      - "admin"
+ *      summary: "deleting country"
+ *      description: "This can only be done by the token of the admin."
+ *      operationId: "deletePays"
+ *      produces:
+ *      - "application/json"
+ *      parameters:
+ *      - in: "body"
+ *        name: "body"
+ *        description: "DELETED COUNTRY"
+ *        required: true
+ *      responses:
+ *       200:
+ *         description: Created
+ */
 router.delete(
   "/deletePays",
   authorization(["ADMIN"]),
