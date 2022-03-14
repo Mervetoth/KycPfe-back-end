@@ -38,6 +38,8 @@ let Admin_tokenList = [];
  *      responses:
  *       200:
  *         description: Created
+ *       400:
+ *         description: Erreur
  */
 /**********************************Register**********************************/
 router.post("/register", authorization("SUPERADMIN"), async (req, res) => {
@@ -113,8 +115,10 @@ router.post("/register", authorization("SUPERADMIN"), async (req, res) => {
  *        description: "loged admin object"
  *        required: true
  *      responses:
- *        default:
+ *       200:
  *          description: "successful operation"
+ *       400:
+ *         description: Erreur
  */
 //******************************Login******************************//
 router.post("/login", async (req, res) => {
@@ -179,6 +183,8 @@ router.post("/login", async (req, res) => {
  *      responses:
  *       200:
  *         description: Created
+ *       400:
+ *         description: Erreur
  */
 //********************UpdateAdmin********************//
 router.patch("/updateAdmin", async (req, res, next) => {
@@ -228,6 +234,8 @@ router.patch("/updateAdmin", async (req, res, next) => {
  *      responses:
  *       200:
  *         description: Created
+ *       400:
+ *         description: Erreur
  */
 //********************UpdateToken********************//
 router.post("/refreshToken", async (req, res, next) => {
@@ -284,6 +292,8 @@ router.post("/refreshToken", async (req, res, next) => {
  *      responses:
  *       200:
  *         description: Created
+ *       400:
+ *         description: Erreur
  */
 //********************ListingAdmin********************//
 router.get(
@@ -318,6 +328,8 @@ router.get(
  *      responses:
  *       200:
  *         description: Created
+ *       400:
+ *         description: Erreur
  */
 //********************ListingUser********************//
 router.get("/listingUser", authorization("ADMIN"), async (req, res, next) => {
@@ -355,6 +367,8 @@ router.get("/listingUser", authorization("ADMIN"), async (req, res, next) => {
  *      responses:
  *       200:
  *         description: Created
+ *       400:
+ *         description: Erreur
  */
 //********************ListingAll********************//
 router.get(
@@ -397,6 +411,8 @@ router.get(
  *      responses:
  *       200:
  *         description: Logged OUt
+ *       400:
+ *         description: Erreur
  */
 //********************LogOut********************//
 router.delete("/logout", async (req, res) => {
@@ -430,6 +446,8 @@ router.delete("/logout", async (req, res) => {
  *      responses:
  *       200:
  *         description: Successful operation
+ *       400:
+ *         description: Erreur
  */
 //********************resetPassword********************//
 router.patch("/resetPassword", async (req, res, next) => {
@@ -488,6 +506,8 @@ router.patch("/resetPassword", async (req, res, next) => {
  *      responses:
  *       200:
  *         description: Successful operation
+ *       400:
+ *         description: Erreur
  */
 //********************newPasswordReset********************//
 router.post("/newPasswordReset", async (req, res) => {
@@ -562,6 +582,8 @@ router.post("/newPasswordReset", async (req, res) => {
  *      responses:
  *       200:
  *         description: Successful operation
+ *       400:
+ *         description: Erreur
  */
 //********************sendMail********************//
 router.post("/sendMail", async (req, res) => {
@@ -607,6 +629,8 @@ router.post("/sendMail", async (req, res) => {
  *      responses:
  *       200:
  *         description: Deleted
+ *       400:
+ *         description: Erreur
  */
 router.delete(
   "/deleteAdmin",
@@ -645,6 +669,8 @@ router.delete(
  *      responses:
  *       200:
  *         description: Deleted
+ *       400:
+ *         description: Erreur
  */
 router.delete("/deleteUser", authorization("ADMIN"), async (req, res, next) => {
   const userId = req.query.id;

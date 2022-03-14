@@ -26,6 +26,8 @@ const { authorization } = require("../functions & middelwares/authorization");
  *      responses:
  *       200:
  *         description: Created
+ *       400:
+ *         description: Erreur
  */
 
 /**********************************ajouterProduit**********************************/
@@ -75,6 +77,8 @@ router.post("/ajouterProduit", authorization("ADMIN"), async (req, res) => {
  *      responses:
  *       200:
  *         description: Consulted
+ *       400:
+ *         description: Erreur
  */
 
 //******************************getByIdProduit******************************//
@@ -120,6 +124,8 @@ router.post("/getByIdProduit", authorization(["ADMIN"]), async (req, res) => {
  *      responses:
  *       200:
  *         description: Updated
+ *       400:
+ *         description: Erreur
  */
 //********************updateProduit********************//
 router.patch(
@@ -153,6 +159,8 @@ router.patch(
  *      responses:
  *       200:
  *         description: Listed
+ *       400:
+ *         description: Erreur
  */
 //********************listingProduit********************//
 router.get(

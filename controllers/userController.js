@@ -39,6 +39,8 @@ let tokenList = [];
  *      responses:
  *       200:
  *         description: Created
+ *       400:
+ *         description: Erreur
  */
 router.post("/register", authorization("ADMIN"), async (req, res) => {
   //**let's validate the data before we make a user**//
@@ -133,8 +135,10 @@ router.post("/register", authorization("ADMIN"), async (req, res) => {
  *        description: "logged user object"
  *        required: true
  *      responses:
- *        default:
+ *       200:
  *          description: "Successful operation"
+ *       400:
+ *         description: Erreur
  */
 //******************************Login******************************//
 router.post("/login", async (req, res) => {
@@ -210,6 +214,8 @@ router.post("/login", async (req, res) => {
  *      responses:
  *       200:
  *         description:Refreshed
+ *       400:
+ *         description: Erreur
  */
 //********************Update********************//
 router.post("/refresh", async (req, res, next) => {
@@ -277,6 +283,8 @@ router.post("/refresh", async (req, res, next) => {
  *      responses:
  *       200:
  *         description: Updated
+ *       400:
+ *         description: Erreur
  */
 //********************UpdateUser********************//
 router.patch("/updateUser", async (req, res, next) => {
@@ -319,6 +327,8 @@ router.patch("/updateUser", async (req, res, next) => {
  *      responses:
  *       200:
  *         description: Logged out
+ *       400:
+ *         description: Erreur
  */
 //********************LogOut********************//
 router.delete("/logout", async (req, res) => {
@@ -347,6 +357,8 @@ router.delete("/logout", async (req, res) => {
  *      responses:
  *       200:
  *         description: Successful operation
+ *       400:
+ *         description: Erreur
  */
 //********************resetPassword********************//
 router.patch("/resetPassword", async (req, res, next) => {
@@ -404,6 +416,8 @@ router.patch("/resetPassword", async (req, res, next) => {
  *      responses:
  *       200:
  *         description: Successful operation
+ *       400:
+ *         description: Erreur
  */
 //********************newPasswordReset********************//
 router.post("/newPasswordReset", async (req, res) => {
@@ -479,6 +493,8 @@ router.post("/newPasswordReset", async (req, res) => {
  *      responses:
  *       200:
  *         description: Deleted
+ *       400:
+ *         description: Erreur
  */
 //********************sendMail********************//
 router.post("/sendMail", async (req, res) => {

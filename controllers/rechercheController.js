@@ -51,7 +51,7 @@ router.post("/ajouterRecherche", authorization("ADMIN"), async (req, res) => {
     const user = await User.findOne({ cin: req.body.cin });
     if (!user)
       return res.status(400).json("User with this cin doesn't exists .");
-
+////////////////////////////////////////////
     //******************** create new Search result ********************//
     const recherche = new Recherche({
       typeRech: req.body.typeRech,
