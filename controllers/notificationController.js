@@ -7,6 +7,29 @@ const {
 const { authorization } = require("../functions & middelwares/authorization");
 
 //ADDING NOTIFICATION
+/**
+ * @swagger
+ * /api/admin/ajouterNotification:
+ *    post:
+ *      tags:
+ *      - "admin"
+ *      summary: "Create user"
+ *      description: "This can only be done by the token of the sueper user."
+ *      operationId: "ajouterNotification"
+ *      produces:
+ *      - "application/json"
+ *      parameters:
+ *      - in: "body"
+ *        name: "body"
+ *        description: "Created notification"
+ *        required: true
+ *      responses:
+ *       200:
+ *         description: Created
+ *      responses:
+ *       400:
+ *         description: Could not create 
+ */
 router.post(
   "/ajouterNotification",
   authorization("ADMIN"),
@@ -56,6 +79,9 @@ router.post(
  *      responses:
  *       200:
  *         description: Created
+ *      responses:
+ *       400:
+ *         description: could not create
  */
 //********************listingNotification********************//
 router.get(
@@ -80,6 +106,26 @@ router.get(
 );
 
 //******************************getByIdProduit******************************//
+/**
+ * @swagger
+ * /api/admin/getByIdNotification:
+ *    post:
+ *      tags:
+ *      - "ADMIN"
+ *      summary: "Get the notification by id"
+ *      description: "This can only be done by the token of the admin."
+ *      operationId: "getByIdNotification"
+ *      produces:
+ *      - "application/json"
+ *      parameters:
+ *      - in: "body"
+ *        name: "body"
+ *        description: "getting notification "
+ *        required: true
+ *      responses:
+ *       200:
+ *         description: Created
+ */
 router.post(
   "/getByIdNotification",
   authorization("ADMIN"),
@@ -107,7 +153,26 @@ router.post(
     }
   }
 );
-  
+  /**
+ * @swagger
+ * /api/admin/deleteNotification:
+ *    delete:
+ *      tags:
+ *      - "admin"
+ *      summary: "Deleting notification"
+ *      description: "This can only be done by the token of the admin."
+ *      operationId: "deleteNotification"
+ *      produces:
+ *      - "application/json"
+ *      parameters:
+ *      - in: "body"
+ *        name: "body"
+ *        description: "deleted Notification"
+ *        required: true
+ *      responses:
+ *       200:
+ *         description: Created
+ */
 router.delete(
   "/deleteNotification",
   authorization("SUPERADMIN"),
