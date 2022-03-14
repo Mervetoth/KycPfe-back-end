@@ -25,8 +25,8 @@ const {
  *        name: "body"
  *        description: "Created Search result  object"
  *        required: true
- *   	  security:
- *	     - bearerAuth: []
+ *      security:
+ *      - bearerAuth: []
  *      responses:
  *       200:
  *         description: Created

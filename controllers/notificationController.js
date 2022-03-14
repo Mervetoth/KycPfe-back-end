@@ -26,9 +26,8 @@ const { authorization } = require("../functions & middelwares/authorization");
  *      responses:
  *       200:
  *         description: Created
- *      responses:
  *       400:
- *         description: Could not create 
+ *         description: Could not create
  */
 router.post(
   "/ajouterNotification",
@@ -79,7 +78,6 @@ router.post(
  *      responses:
  *       200:
  *         description: Created
- *      responses:
  *       400:
  *         description: could not create
  */
@@ -111,7 +109,7 @@ router.get(
  * /api/admin/getByIdNotification:
  *    post:
  *      tags:
- *      - "ADMIN"
+ *      - "admin"
  *      summary: "Get the notification by id"
  *      description: "This can only be done by the token of the admin."
  *      operationId: "getByIdNotification"
@@ -153,7 +151,7 @@ router.post(
     }
   }
 );
-  /**
+/**
  * @swagger
  * /api/admin/deleteNotification:
  *    delete:
