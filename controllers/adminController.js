@@ -373,7 +373,7 @@ router.get("/listingUser", authorization("ADMIN"), async (req, res, next) => {
 //********************ListingAll********************//
 router.get(
   "/listingAll",
-  authorization(["SUPERADMIN"]),
+  authorization("SUPERADMIN"),
   async (req, res, next) => {
     let users;
     let admins;

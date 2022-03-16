@@ -4,6 +4,7 @@ const joi = require("@hapi/joi");
 const Admin = require("../model/Admin");
 const User = require("../model/User");
 const jwt_decode = require("jwt-decode");
+const fetch = require("node-fetch");
 const { authorization } = require("../functions & middelwares/authorization");
 
 const {
@@ -33,57 +34,143 @@ const {
  */
 
 /**********************************ajouterRecherche**********************************/
-router.post("/ajouterRecherche", authorization("ADMIN"), async (req, res) => {
+router.post("/rechercheLocal", authorization("ADMIN"), async (req, res) => {
+  //**let's validate the data before we make a Recherche**//
+  const schema = joi.object({
+    cin: joi.string().required(),
+    firstName: joi.string().required(),
+    lastName: joi.string().required(),
+  });
+  const { error } = schema.validate(req.body);
+  if (error) return res.status(400).json(error.details[0].message);
+
   const authHeader = req.headers["authorization"];
   const token = authHeader && authHeader.split(" ")[1];
   if (!token) {
     res.status(400).json("Token is not found");
   } else {
     const decoded = jwt_decode(token);
-    console.log("decoded");
-    const admin = await Admin.findById(decoded._id, "-password");
-    //**let's validate the data before we make a Recherche**//
 
-    const { error } = ajouterRechercheValidation(req.body);
-    if (error) return res.status(400).json(error.details[0].message);
+    const admin = await Admin.findById(decoded._id, "-password");
 
     //**checking if the user is already in the database**//
     const user = await User.findOne({ cin: req.body.cin });
-    if (!user)
-      return res.status(400).json("User with this cin doesn't exists .");
-////////////////////////////////////////////
+    if (!user) {
+      var recherche = new Recherche({
+           status: "Not found", 
+           typeRech: "Local",
+        cin: req.body.cin,
+        firstName: req.body.firstName,
+        lastName: req.body.lastName,
+        adminId: decoded._id,
+    
+      });
+    } else {
+      var recherche = new Recherche({ 
+       status: "Found",
+        typeRech: "Local",
+        cin: req.body.cin,
+        firstName: user.firstName,
+        lastName: user.lastName,
+        adminId: decoded._id,
+      
+      });
+    }
+
     //******************** create new Search result ********************//
-    const recherche = new Recherche({
-      typeRech: req.body.typeRech,
-      cin: req.body.cin,
-      firstName: user.firstName,
-      lastName: user.lastName,
-      adminId: decoded._id,
-      status: req.body.status,
-      listeId: req.body.listeId,
-      historiqueRech: req.body.historiqueRech,
-      listeCorr: req.body.listeCorr,
-    });
+
     try {
       await recherche.save();
 
-      const result = {
-        status: "Recherche bien effectué .",
-        id: recherche._id,
-        typeRech: recherche.typeRech,
-        cin: recherche.cin,
-        firstName: recherche.firstName,
-        lastName: recherche.lastName,
-        adminId: recherche.adminId,
-        status: recherche.status,
-        listeId: recherche.listeId,
-        historiqueRech: recherche.historiqueRech,
-        listeCorr: recherche.listeCorr,
-      };
-      res.json({ result });
+      res.json({ recherche });
     } catch (err) {
       res.status(400).json(err);
     }
+  }
+});
+
+
+
+/**********************************ajouterRecherche**********************************/
+router.post("/rechercheOfac", authorization("ADMIN"), async (req, res) => {
+  //**let's validate the data before we make a Recherche**//
+  const schema = joi.object({
+    country: joi.string().required(),
+    firstName: joi.string().required(),
+    lastName: joi.string().required(),
+  });
+  const { error } = schema.validate(req.body);
+  if (error) return res.status(400).json(error.details[0].message);
+
+  const authHeader = req.headers["authorization"];
+  const token = authHeader && authHeader.split(" ")[1];
+  if (!token) {
+    res.status(400).json("Token is not found");
+  } else {
+    const decoded = jwt_decode(token);
+
+    const admin = await Admin.findById(decoded._id, "-password");
+
+
+    (async () => {
+      const rawResponse = await fetch('https://search.ofac-api.com/v3', {
+        method: 'POST',
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json'
+        },
+        body: (JSON.stringify({apiKey: "abdfa087-4a94-440b-9893-8fd395f600da",
+        cases:[{name:(req.body.firstName+' '+req.body.lastName)}],
+        source:["SDN"],
+      }
+        )
+        )
+        
+      });
+
+      const content = await rawResponse.json();
+      res.json({ content });
+      console.log(content.matches.indexOf(","));
+
+
+    })();
+
+
+
+/*     
+    const user = await User.findOne({ cin: req.body.cin });
+    if (!user) {
+      var recherche = new Recherche({
+           status: "Not found", 
+           typeRech: "Local",
+        cin: req.body.cin,
+        firstName: req.body.firstName,
+        lastName: req.body.lastName,
+        adminId: decoded._id,
+    
+      });
+    } else {
+      var recherche = new Recherche({ 
+       status: "Found",
+        typeRech: "Local",
+        cin: req.body.cin, 
+        firstName: user.firstName,
+        lastName: user.lastName,
+        adminId: decoded._id,
+      
+      });
+    }
+
+    //******************** create new Search result 
+
+    try {
+      await recherche.save();
+
+      res.json({ recherche });
+    } catch (err) {
+    //  res.status(400).json(err);
+    } */
+    
   }
 });
 /**
