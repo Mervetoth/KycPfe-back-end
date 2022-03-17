@@ -2,6 +2,7 @@ const router = require("express").Router();
 const Recherche = require("../model/Recherche");
 const joi = require("@hapi/joi");
 const Admin = require("../model/Admin");
+const ResultatCorr = require("../model/ResultatCorr");
 const User = require("../model/User");
 const jwt_decode = require("jwt-decode");
 const fetch = require("node-fetch");
@@ -57,23 +58,21 @@ router.post("/rechercheLocal", authorization("ADMIN"), async (req, res) => {
     const user = await User.findOne({ cin: req.body.cin });
     if (!user) {
       var recherche = new Recherche({
-           status: "Not found", 
-           typeRech: "Local",
+        status: "Not found",
+        typeRech: "Local",
         cin: req.body.cin,
         firstName: req.body.firstName,
         lastName: req.body.lastName,
         adminId: decoded._id,
-    
       });
     } else {
-      var recherche = new Recherche({ 
-       status: "Found",
+      var recherche = new Recherche({
+        status: "Found",
         typeRech: "Local",
         cin: req.body.cin,
         firstName: user.firstName,
         lastName: user.lastName,
         adminId: decoded._id,
-      
       });
     }
 
@@ -89,14 +88,12 @@ router.post("/rechercheLocal", authorization("ADMIN"), async (req, res) => {
   }
 });
 
-
-
 /**********************************ajouterRecherche**********************************/
 router.post("/rechercheOfac", authorization("ADMIN"), async (req, res) => {
   //**let's validate the data before we make a Recherche**//
   const schema = joi.object({
-    country: joi.string().required(),
     firstName: joi.string().required(),
+    country: joi.string(),
     lastName: joi.string().required(),
   });
   const { error } = schema.validate(req.body);
@@ -111,66 +108,96 @@ router.post("/rechercheOfac", authorization("ADMIN"), async (req, res) => {
 
     const admin = await Admin.findById(decoded._id, "-password");
 
-
     (async () => {
-      const rawResponse = await fetch('https://search.ofac-api.com/v3', {
-        method: 'POST',
+      const rawResponse = await fetch("https://search.ofac-api.com/v3", {
+        method: "POST",
         headers: {
-          'Accept': 'application/json',
-          'Content-Type': 'application/json'
+          Accept: "application/json",
+          "Content-Type": "application/json",
         },
-        body: (JSON.stringify({apiKey: "abdfa087-4a94-440b-9893-8fd395f600da",
-        cases:[{name:(req.body.firstName+' '+req.body.lastName)}],
-        source:["SDN"],
-      }
-        )
-        )
-        
+        body: JSON.stringify({
+          apiKey: "abdfa087-4a94-440b-9893-8fd395f600da",
+          cases: [{ name: req.body.firstName + " " + req.body.lastName }],
+          source: ["SDN", "NONSDN", "DPL", "UN", "UK"],
+        }),
       });
 
       const content = await rawResponse.json();
-      res.json({ content });
-      console.log(content.matches.indexOf(","));
+      verifyContent = JSON.stringify(content.matches).indexOf(",");
 
+      var result = "";
+      if (verifyContent === -1) {
+        result = "Person is not found .";
 
+        var recherche = new Recherche({
+          status: "Not found",
+          typeRech: "Individual",
+          country: req.body.country,
+          firstName: req.body.firstName,
+          lastName: req.body.lastName,
+          adminId: decoded._id,
+        });
+      } else {
+        result = "Person is found .";
+
+        var recherche = new Recherche({
+          status: "Found",
+          typeRech: "Individual",
+          country: req.body.country,
+          firstName: req.body.firstName,
+          lastName: req.body.lastName,
+          adminId: decoded._id,
+        });
+
+        var resultatCorr = new ResultatCorr({
+          status: "Found",
+          // userId: req.body.country,
+          source:content.matches[req.body.firstName + " " + req.body.lastName][1].source,
+          fullName:content.matches[req.body.firstName + " " + req.body.lastName][1].fullName,
+          dob:content.matches[req.body.firstName + " " + req.body.lastName][1].dob,
+          uid:content.matches[req.body.firstName + " " + req.body.lastName][1].addresses[0].uid,
+          address1:content.matches[req.body.firstName + " " + req.body.lastName][1].addresses[0].address1,
+          address2:content.matches[req.body.firstName + " " + req.body.lastName][1].addresses[0].address2,
+          address3:content.matches[req.body.firstName + " " + req.body.lastName][1].addresses[0].address3,
+          postalCode:content.matches[req.body.firstName + " " + req.body.lastName][1].addresses[0].postalCode,
+          country:content.matches[req.body.firstName + " " + req.body.lastName][1].addresses[0].country,
+          city:content.matches[req.body.firstName + " " + req.body.lastName][1].addresses[0].city,
+          sdnType:content.matches[req.body.firstName+" "+req.body.lastName][1].sdnType,
+          remarks:content.matches[req.body.firstName+" "+req.body.lastName][1].remarks,
+          programs:content.matches[req.body.firstName+" "+req.body.lastName][1].programs,
+          driversLicenses:content.matches[req.body.firstName+" "+req.body.lastName][1].driversLicenses,
+          score:content.matches[req.body.firstName+" "+req.body.lastName][1].score,
+          selectiodeRech:content.matches[req.body.firstName+" "+req.body.lastName][1].selectiodeRech,
+          gender:content.matches[req.body.firstName+" "+req.body.lastName][1].gender,
+          passports:content.matches[req.body.firstName+" "+req.body.lastName][1].passports,
+          action:content.matches[req.body.firstName+" "+req.body.lastName][1].action,
+/*           uid_a:content.matches[req.body.firstName + " " + req.body.lastName][1].akas[0].uid,
+          score:content.matches[req.body.firstName + " " + req.body.lastName][1].akas[0].score,
+          category:content.matches[req.body.firstName + " " + req.body.lastName][1].akas[0].category,
+          lastName:content.matches[req.body.firstName + " " + req.body.lastName][1].akas[0].lastName,
+          firstName:content.matches[req.body.firstName + " " + req.body.lastName][1].akas[0].firstName, */
+        }) ;
+      }
+      console.log(
+    content.matches[req.body.firstName + " " + req.body.lastName][1].akas[0]
+      );
+      //******************** create new Search result ********************//
+
+      try {
+        await recherche.save();
+        //    await resultatCorr.save();
+
+        res
+          .status(200)
+          .json({
+            result,
+            content:
+              content.matches[req.body.firstName + " " + req.body.lastName],
+          });
+      } catch (err) {
+        res.status(400).json(err);
+      }
     })();
-
-
-
-/*     
-    const user = await User.findOne({ cin: req.body.cin });
-    if (!user) {
-      var recherche = new Recherche({
-           status: "Not found", 
-           typeRech: "Local",
-        cin: req.body.cin,
-        firstName: req.body.firstName,
-        lastName: req.body.lastName,
-        adminId: decoded._id,
-    
-      });
-    } else {
-      var recherche = new Recherche({ 
-       status: "Found",
-        typeRech: "Local",
-        cin: req.body.cin, 
-        firstName: user.firstName,
-        lastName: user.lastName,
-        adminId: decoded._id,
-      
-      });
-    }
-
-    //******************** create new Search result 
-
-    try {
-      await recherche.save();
-
-      res.json({ recherche });
-    } catch (err) {
-    //  res.status(400).json(err);
-    } */
-    
   }
 });
 /**
