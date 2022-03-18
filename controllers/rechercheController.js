@@ -3,6 +3,7 @@ const Recherche = require("../model/Recherche");
 const joi = require("@hapi/joi");
 const Admin = require("../model/Admin");
 const ResultatCorr = require("../model/ResultatCorr");
+
 const User = require("../model/User");
 const jwt_decode = require("jwt-decode");
 const fetch = require("node-fetch");
@@ -58,7 +59,7 @@ router.post("/rechercheLocal", authorization("ADMIN"), async (req, res) => {
     const user = await User.findOne({ cin: req.body.cin });
     if (!user) {
       var recherche = new Recherche({
-        status: "Not found",
+        status:0,
         typeRech: "Local",
         cin: req.body.cin,
         firstName: req.body.firstName,
@@ -67,7 +68,7 @@ router.post("/rechercheLocal", authorization("ADMIN"), async (req, res) => {
       });
     } else {
       var recherche = new Recherche({
-        status: "Found",
+        status: 1,
         typeRech: "Local",
         cin: req.body.cin,
         firstName: user.firstName,
@@ -123,25 +124,13 @@ router.post("/rechercheOfac", authorization("ADMIN"), async (req, res) => {
       });
 
       const content = await rawResponse.json();
-      verifyContent = JSON.stringify(content.matches).indexOf(",");
+  
 
-      var result = "";
-      if (verifyContent === -1) {
-        result = "Person is not found .";
-
-        var recherche = new Recherche({
-          status: "Not found",
-          typeRech: "Individual",
-          country: req.body.country,
-          firstName: req.body.firstName,
-          lastName: req.body.lastName,
-          adminId: decoded._id,
-        });
-      } else {
-        result = "Person is found .";
+      if ( ( content.matches[req.body.firstName + " " + req.body.lastName]).length===0) {
+    
 
         var recherche = new Recherche({
-          status: "Found",
+          status: 0,
           typeRech: "Individual",
           country: req.body.country,
           firstName: req.body.firstName,
@@ -149,55 +138,67 @@ router.post("/rechercheOfac", authorization("ADMIN"), async (req, res) => {
           adminId: decoded._id,
         });
 
-        var resultatCorr = new ResultatCorr({
-          status: "Found",
-          // userId: req.body.country,
-          source:content.matches[req.body.firstName + " " + req.body.lastName][0].source,
-          fullName:content.matches[req.body.firstName + " " + req.body.lastName][0].fullName,
-          dob:content.matches[req.body.firstName + " " + req.body.lastName][0].dob,
-          uid:content.matches[req.body.firstName + " " + req.body.lastName][0].addresses[0].uid,
-          address1:content.matches[req.body.firstName + " " + req.body.lastName][0].addresses[0].address1,
-          address2:content.matches[req.body.firstName + " " + req.body.lastName][0].addresses[0].address2,
-          address3:content.matches[req.body.firstName + " " + req.body.lastName][0].addresses[0].address3,
-          postalCode:content.matches[req.body.firstName + " " + req.body.lastName][0].addresses[0].postalCode,
-          country:content.matches[req.body.firstName + " " + req.body.lastName][0].addresses[0].country,
-          city:content.matches[req.body.firstName + " " + req.body.lastName][0].addresses[0].city,
-          sdnType:content.matches[req.body.firstName+" "+req.body.lastName][0].sdnType,
-          remarks:content.matches[req.body.firstName+" "+req.body.lastName][0].remarks,
-          programs:content.matches[req.body.firstName+" "+req.body.lastName][0].programs,
-          driversLicenses:content.matches[req.body.firstName+" "+req.body.lastName][0].driversLicenses,
-          score:content.matches[req.body.firstName+" "+req.body.lastName][0].score,
-          gender:content.matches[req.body.firstName+" "+req.body.lastName][0].gender,
-          passports:content.matches[req.body.firstName+" "+req.body.lastName][0].passports,
-          action:content.matches[req.body.firstName+" "+req.body.lastName][0].action,
-/*           uid_a:content.matches[req.body.firstName + " " + req.body.lastName][0].akas[0].uid,
-          score:content.matches[req.body.firstName + " " + req.body.lastName][0].akas[0].score,
-          category:content.matches[req.body.firstName + " " + req.body.lastName][0].akas[0].category,
-          lastName:content.matches[req.body.firstName + " " + req.body.lastName][0].akas[0].lastName,
-          firstName:content.matches[req.body.firstName + " " + req.body.lastName][0].akas[0].firstName, */
+    await recherche.save();
+
+      } 
+      var   recherche =  await new Recherche({
+        status: 1,
+        typeRech: "Individual",
+        country: req.body.country,
+        firstName: req.body.firstName,
+        lastName: req.body.lastName,
+        adminId: decoded._id,
+  
+
+      });
+ let listIdMatches=await[]
+     await   content.matches[req.body.firstName + " " + req.body.lastName].forEach( async (element,index) => {
+            const resultatCorr = new ResultatCorr({
+          status: 1,   
+          source:element.source,
+          fullName:element.fullName,
+          firstName:element.firstName,
+          lastName:element.lastName,
+          dob:element.dob,
+          addresses:element.addresses ,
+          sdnType:element.sdnType,
+          remarks:element.remarks,
+          programs:element.programs,
+          driversLicenses:element.driversLicenses,
+          score:element.score,
+          gender:element.gender,
+          passports:element.passports,
+          action:element.action,
+         akas:element.akas, 
         }) ;
-      }
-      
-     // console.log(content.matches[req.body.firstName+" "+req.body.lastName][0]);
-  // console.log(  content.matches[req.body.firstName + " " + req.body.lastName][0].dob);
-      //******************** create new Search result ********************//
+  const savedObj=  await  resultatCorr.save();
+  
 
+    
+
+    recherche.listeCorr= [...recherche.listeCorr,savedObj._id] 
+    
+    if(content.matches[req.body.firstName + " " + req.body.lastName].length-1===index)
+    await recherche.save();
+       });
+
+      
+   
+      //******************** create new Search result ********************//
+      
+    
       try {
-        await recherche.save();
-        const savedresultatCorr = await resultatCorr.save();
-if ( savedresultatCorr){console.log("savedd")}else{console.log("notttttttttt")}
+         
         res
           .status(200)
           .json({
-            savedresultatCorr,
-            result,
             content:
               content.matches[req.body.firstName + " " + req.body.lastName],
           });
       } catch (err) {
         res.status(400).json(err);
-      }
-    })();
+    }}
+    )();
   }
 });
 /**
@@ -222,7 +223,6 @@ if ( savedresultatCorr){console.log("savedd")}else{console.log("notttttttttt")}
  *       200:
  *         description: Consulted
  */
-
 //******************************getByIdRecherche******************************//
 router.post("/getByIdRecherche", async (req, res) => {
   //**let's validate the data before we make a Recherche**//
@@ -246,45 +246,13 @@ router.post("/getByIdRecherche", async (req, res) => {
     lastName: recherche.lastName,
     adminId: recherche.adminId,
     status: recherche.status,
-    listeId: recherche.listeId,
+    listeCorr: recherche.listeCorr,
     historiqueRech: recherche.historiqueRech,
     listeCorr: recherche.listeCorr,
   };
   res.json({ result });
 });
-/**
- * @swagger
- * /api/Recherche/updateRecherche:
- *    patch:
- *      tags:
- *      - "Recherche"
- *      summary: "update Recherche"
- *      description: "Updating Search result ."
- *      operationId: "updateRecherche"
- *      produces:
- *      - "application/json"
- *      parameters:
- *      - in: "body"
- *        name: "body"
- *        description: "update Recherche"
- *        required: true
- *      responses:
- *       200:
- *         description: Updated
- */
-//********************UpdateAdmin********************//
-router.patch("/updateRecherche", async (req, res, next) => {
-  try {
-    const rechercheId = req.query.id;
-    const recherche = await Recherche.findById(rechercheId);
-    if (!recherche) res.json("Search result is not found .");
-    Object.assign(recherche, req.body);
-    recherche.save();
-    res.json({ data: recherche });
-  } catch (err) {
-    res.status(400).json("Search result is not found .");
-  }
-});
+
 
 /**
  * @swagger

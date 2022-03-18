@@ -4,9 +4,15 @@ const resultatCorrSchema = new mongoose.Schema({
     type: String,
   },
   status: {
-    type: String,
+    type: Number,
   },
   fullName: {
+    type: String,
+  },
+  firstName: {
+    type: String,
+  },
+  lastName: {
     type: String,
   },
   addresses: [
@@ -30,7 +36,7 @@ const resultatCorrSchema = new mongoose.Schema({
         type: String,
       },
       postalCode: {
-        type: String,
+        type: Number,
       },
     },
   ],
@@ -53,11 +59,11 @@ const resultatCorrSchema = new mongoose.Schema({
   },
   akas: [
     {
-      uid: { type: Number },
-      score: { type: Number },
-      category: { type: String },
-      lastName: { type: String },
-      firstName: { type: String },
+      uid:  String ,
+      score: String ,
+      category: String ,
+      lastName:  String ,
+      firstName:  String ,
     },
   ],
   dob: {

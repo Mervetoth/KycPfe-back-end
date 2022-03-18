@@ -23,16 +23,13 @@ const userSchema = new mongoose.Schema({
   status: {
     type: String,
   },
-  listeId: {
+  listeCorr: [{
     type: String,
-  },
+  }],
   historiqueRech: {
     type: String,
   },
-  listeCorr: {
-    type: String,
-  },
-
+  
   createdAt: {
     type: Date,
     default: Date.now,

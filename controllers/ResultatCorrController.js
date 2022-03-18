@@ -1,9 +1,8 @@
 const router = require("express").Router();
 const ResultatCorr = require("../model/ResultatCorr");
+const User = require("../model/User");
 const joi = require("@hapi/joi");
-const {
-  ajouerResultatCorrespondacesValidation,
-} = require("../functions & middelwares/validation");
+
 /**
  * @swagger
  * /api/admin/ajouterResultatCorrespondaces:
@@ -31,24 +30,22 @@ const {
 router.post("/ajouterResultatCorrespondaces", async (req, res) => {
   //**let's validate the data before we make a resultatCorr**//
 
-  const { error } = ajouerResultatCorrespondacesValidation(req.body);
-  if (error) return res.status(400).json(error.details[0].message);
 
   //******************** create new Match Result ********************//
   const resultatCorr = new ResultatCorr({
     userId: req.body.userId,
-    prodName: req.body.prodName,
+  
   });
   try {
     await resultatCorr.save();
 
-    const user = await User.findById(req.body.userId);
+    const user = await User.findById(req.body.userId);console.log("f")
     if (!user) return res.status(400).json("User is not found !");
 
     const result = {
       status: "Created Match Result  .",
       userId: resultatCorr.userId,
-      selctionRecherche: resultatCorr.selctionRecherche,
+   
     };
     res.json({ result });
   } catch (err) {
@@ -90,7 +87,7 @@ router.post("/getByIdResultatCorrespondaces", async (req, res) => {
   //**checking if the email exists**//.
 
   const resultatCorr = await ResultatCorr.findById(req.body.id);
-  if (!resultatCorr) return res.status(400).json("   Matches are not found");
+  if (!resultatCorr) return res.status(400).json(" Matches are not found");
 
   const result = {
     status: "Result Matches :",
