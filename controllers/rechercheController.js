@@ -152,44 +152,44 @@ router.post("/rechercheOfac", authorization("ADMIN"), async (req, res) => {
         var resultatCorr = new ResultatCorr({
           status: "Found",
           // userId: req.body.country,
-          source:content.matches[req.body.firstName + " " + req.body.lastName][1].source,
-          fullName:content.matches[req.body.firstName + " " + req.body.lastName][1].fullName,
-          dob:content.matches[req.body.firstName + " " + req.body.lastName][1].dob,
-          uid:content.matches[req.body.firstName + " " + req.body.lastName][1].addresses[0].uid,
-          address1:content.matches[req.body.firstName + " " + req.body.lastName][1].addresses[0].address1,
-          address2:content.matches[req.body.firstName + " " + req.body.lastName][1].addresses[0].address2,
-          address3:content.matches[req.body.firstName + " " + req.body.lastName][1].addresses[0].address3,
-          postalCode:content.matches[req.body.firstName + " " + req.body.lastName][1].addresses[0].postalCode,
-          country:content.matches[req.body.firstName + " " + req.body.lastName][1].addresses[0].country,
-          city:content.matches[req.body.firstName + " " + req.body.lastName][1].addresses[0].city,
-          sdnType:content.matches[req.body.firstName+" "+req.body.lastName][1].sdnType,
-          remarks:content.matches[req.body.firstName+" "+req.body.lastName][1].remarks,
-          programs:content.matches[req.body.firstName+" "+req.body.lastName][1].programs,
-          driversLicenses:content.matches[req.body.firstName+" "+req.body.lastName][1].driversLicenses,
-          score:content.matches[req.body.firstName+" "+req.body.lastName][1].score,
-          selectiodeRech:content.matches[req.body.firstName+" "+req.body.lastName][1].selectiodeRech,
-          gender:content.matches[req.body.firstName+" "+req.body.lastName][1].gender,
-          passports:content.matches[req.body.firstName+" "+req.body.lastName][1].passports,
-          action:content.matches[req.body.firstName+" "+req.body.lastName][1].action,
-/*           uid_a:content.matches[req.body.firstName + " " + req.body.lastName][1].akas[0].uid,
-          score:content.matches[req.body.firstName + " " + req.body.lastName][1].akas[0].score,
-          category:content.matches[req.body.firstName + " " + req.body.lastName][1].akas[0].category,
-          lastName:content.matches[req.body.firstName + " " + req.body.lastName][1].akas[0].lastName,
-          firstName:content.matches[req.body.firstName + " " + req.body.lastName][1].akas[0].firstName, */
+          source:content.matches[req.body.firstName + " " + req.body.lastName][0].source,
+          fullName:content.matches[req.body.firstName + " " + req.body.lastName][0].fullName,
+          dob:content.matches[req.body.firstName + " " + req.body.lastName][0].dob,
+          uid:content.matches[req.body.firstName + " " + req.body.lastName][0].addresses[0].uid,
+          address1:content.matches[req.body.firstName + " " + req.body.lastName][0].addresses[0].address1,
+          address2:content.matches[req.body.firstName + " " + req.body.lastName][0].addresses[0].address2,
+          address3:content.matches[req.body.firstName + " " + req.body.lastName][0].addresses[0].address3,
+          postalCode:content.matches[req.body.firstName + " " + req.body.lastName][0].addresses[0].postalCode,
+          country:content.matches[req.body.firstName + " " + req.body.lastName][0].addresses[0].country,
+          city:content.matches[req.body.firstName + " " + req.body.lastName][0].addresses[0].city,
+          sdnType:content.matches[req.body.firstName+" "+req.body.lastName][0].sdnType,
+          remarks:content.matches[req.body.firstName+" "+req.body.lastName][0].remarks,
+          programs:content.matches[req.body.firstName+" "+req.body.lastName][0].programs,
+          driversLicenses:content.matches[req.body.firstName+" "+req.body.lastName][0].driversLicenses,
+          score:content.matches[req.body.firstName+" "+req.body.lastName][0].score,
+          gender:content.matches[req.body.firstName+" "+req.body.lastName][0].gender,
+          passports:content.matches[req.body.firstName+" "+req.body.lastName][0].passports,
+          action:content.matches[req.body.firstName+" "+req.body.lastName][0].action,
+/*           uid_a:content.matches[req.body.firstName + " " + req.body.lastName][0].akas[0].uid,
+          score:content.matches[req.body.firstName + " " + req.body.lastName][0].akas[0].score,
+          category:content.matches[req.body.firstName + " " + req.body.lastName][0].akas[0].category,
+          lastName:content.matches[req.body.firstName + " " + req.body.lastName][0].akas[0].lastName,
+          firstName:content.matches[req.body.firstName + " " + req.body.lastName][0].akas[0].firstName, */
         }) ;
       }
-      console.log(
-    content.matches[req.body.firstName + " " + req.body.lastName][1].akas[0]
-      );
+      
+     // console.log(content.matches[req.body.firstName+" "+req.body.lastName][0]);
+  // console.log(  content.matches[req.body.firstName + " " + req.body.lastName][0].dob);
       //******************** create new Search result ********************//
 
       try {
         await recherche.save();
-        //    await resultatCorr.save();
-
+        const savedresultatCorr = await resultatCorr.save();
+if ( savedresultatCorr){console.log("savedd")}else{console.log("notttttttttt")}
         res
           .status(200)
           .json({
+            savedresultatCorr,
             result,
             content:
               content.matches[req.body.firstName + " " + req.body.lastName],

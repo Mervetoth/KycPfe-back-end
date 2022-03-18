@@ -90,7 +90,7 @@ router.post("/getByIdResultatCorrespondaces", async (req, res) => {
   //**checking if the email exists**//.
 
   const resultatCorr = await ResultatCorr.findById(req.body.id);
-  if (!resultatCorr) return res.status(400).json("   Matches is not found");
+  if (!resultatCorr) return res.status(400).json("   Matches are not found");
 
   const result = {
     status: "Result Matches :",

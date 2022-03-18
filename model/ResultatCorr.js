@@ -1,6 +1,5 @@
-const number = require("@hapi/joi/lib/types/number");
 const mongoose = require("mongoose");
-const userSchema = new mongoose.Schema({
+const resultatCorrSchema = new mongoose.Schema({
   userId: {
     type: String,
   },
@@ -94,4 +93,5 @@ const userSchema = new mongoose.Schema({
     default: Date.now,
   },
 });
-module.exports = mongoose.model("ResultatCorr", userSchema);
+
+module.exports = mongoose.model("ResultatCorr", resultatCorrSchema);
