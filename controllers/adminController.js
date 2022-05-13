@@ -61,7 +61,7 @@ router.post("/register", authorization("SUPERADMIN"), async (req, res) => {
     telNumber: req.body.telNumber,
     password: hashedPassword,
   });
-  console.log(admin)
+  console.log(admin);
   try {
     const savedAdmin = await admin.save();
     let token = generatetoken(

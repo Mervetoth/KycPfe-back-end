@@ -193,7 +193,8 @@ router.post("/login", async (req, res) => {
     permissions: user.permissions,
     createdAt: user.createdAt,
   };
-  res.header("auth-token", token).json(result);
+  /*   res.header("auth-token", token).json(result); */
+  res.send(result);
 });
 /**
  * @swagger

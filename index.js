@@ -14,6 +14,9 @@ const notif = require("./controllers/notificationController");
 const dotenv = require("dotenv");
 const multer = require("multer");
 const upload = multer();
+const cors = require("cors");
+app.use(cors());
+
 app.use("uploads", express.static("uploads"));
 app.use(express.urlencoded({ extended: true }));
 app.use(upload.single("file"));

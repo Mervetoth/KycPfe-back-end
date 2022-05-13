@@ -36,33 +36,36 @@ const ajouterPaysValidation = (data) => {
  *         description: Created
  */
 
-router.post("/ajouterPays", authorization(["ADMIN"]), async (req, res) => {
-  // validation de data
+router.post(
+  "/ajouterPays",
+  /*  authorization(["ADMIN"]) ,*/ async (req, res) => {
+    // validation de data
 
-  const { error } = ajouterPaysValidation(req.body);
-  if (error) return res.status(400).json(error.details[0].message);
+    const { error } = ajouterPaysValidation(req.body);
+    if (error) return res.status(400).json(error.details[0].message);
 
-  // creation de pays
+    // creation de pays
 
-  const pays = new Pays({
-    pays: req.body.pays,
-    paysRisque: req.body.paysRisque,
-  });
-  try {
-    const savedPays = await pays.save();
+    const pays = new Pays({
+      pays: req.body.pays,
+      paysRisque: req.body.paysRisque,
+    });
+    try {
+      const savedPays = await pays.save();
 
-    const result = {
-      status: "added country.",
-      id: pays._id,
-      paysRisque: pays.paysRisque,
-      pays: pays.pays,
-    };
+      const result = {
+        status: "added country.",
+        id: pays._id,
+        paysRisque: pays.paysRisque,
+        pays: pays.pays,
+      };
 
-    res.json({ result });
-  } catch (error) {
-    res.status(400).json(error);
+      res.json({ result });
+    } catch (error) {
+      res.status(400).json(error);
+    }
   }
-});
+);
 
 /******************************consulterPays******************************/
 /**
