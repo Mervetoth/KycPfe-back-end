@@ -341,8 +341,6 @@ router.get("/listingUser", authorization("ADMIN"), async (req, res, next) => {
       .limit(limit * 1)
       .skip((page - 1) * limit);
 
-    res.status(403).json("There is no users !");
-
     const count = await User.count();
     const nbpage = Math.ceil(count / limit);
     res.json({

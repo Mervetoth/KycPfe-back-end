@@ -36,36 +36,33 @@ const ajouterPaysValidation = (data) => {
  *         description: Created
  */
 
-router.post(
-  "/ajouterPays",
-  /*  authorization(["ADMIN"]) ,*/ async (req, res) => {
-    // validation de data
+router.post("/ajouterPays", authorization("ADMIN"), async (req, res) => {
+  // validation de data
 
-    const { error } = ajouterPaysValidation(req.body);
-    if (error) return res.status(400).json(error.details[0].message);
+  const { error } = ajouterPaysValidation(req.body);
+  if (error) return res.status(400).json(error.details[0].message);
 
-    // creation de pays
+  // creation de pays
 
-    const pays = new Pays({
-      pays: req.body.pays,
-      paysRisque: req.body.paysRisque,
-    });
-    try {
-      const savedPays = await pays.save();
+  const pays = new Pays({
+    pays: req.body.pays,
+    paysRisque: req.body.paysRisque,
+  });
+  try {
+    const savedPays = await pays.save();
 
-      const result = {
-        status: "added country.",
-        id: pays._id,
-        paysRisque: pays.paysRisque,
-        pays: pays.pays,
-      };
+    const result = {
+      status: "added country.",
+      id: pays._id,
+      paysRisque: pays.paysRisque,
+      pays: pays.pays,
+    };
 
-      res.json({ result });
-    } catch (error) {
-      res.status(400).json(error);
-    }
+    res.json({ result });
+  } catch (error) {
+    res.status(400).json(error);
   }
-);
+});
 
 /******************************consulterPays******************************/
 /**
@@ -88,7 +85,7 @@ router.post(
  *       200:
  *         description: Created
  */
-router.post("/consulterPays", authorization(["ADMIN"]), async (req, res) => {
+router.post("/consulterPays", authorization("ADMIN"), async (req, res) => {
   //**let's validate the data before we make a pays**//
   const schema = joi.object({
     id: joi.string().required(),
@@ -133,22 +130,18 @@ router.post("/consulterPays", authorization(["ADMIN"]), async (req, res) => {
  *         description: Created
  */
 //********************Updatepays********************//
-router.patch(
-  "/updatePays",
-  authorization(["ADMIN"]),
-  async (req, res, next) => {
-    try {
-      const paysId = req.query.id;
-      const pays = await Pays.findById(paysId);
-      if (!pays) res.json("Pays is not found .");
-      Object.assign(pays, req.body);
-      pays.save();
-      res.json({ data: pays });
-    } catch (err) {
-      res.status(400).json("Pays is not found .");
-    }
+router.patch("/updatePays", authorization("ADMIN"), async (req, res, next) => {
+  try {
+    const paysId = req.query.id;
+    const pays = await Pays.findById(paysId);
+    if (!pays) res.json("Pays is not found .");
+    Object.assign(pays, req.body);
+    pays.save();
+    res.json({ data: pays });
+  } catch (err) {
+    res.status(400).json("Pays is not found .");
   }
-);
+});
 
 /**
  * @swagger
@@ -166,7 +159,7 @@ router.patch(
  *         description: Created
  */
 //********************listingPays********************//
-router.get("/listingPays", authorization(["ADMIN"]), async (req, res, next) => {
+router.get("/listingPays", authorization("ADMIN"), async (req, res, next) => {
   let pays;
   try {
     const { page = 1, limit = 2 } = req.query;
@@ -200,21 +193,17 @@ router.get("/listingPays", authorization(["ADMIN"]), async (req, res, next) => {
  *       200:
  *         description: Created
  */
-router.delete(
-  "/deletePays",
-  authorization(["ADMIN"]),
-  async (req, res, next) => {
-    const paysId = req.query.id;
-    const pays = await Pays.findById(paysId);
-    if (!pays) res.json("country is not found .");
+router.delete("/deletePays", authorization("ADMIN"), async (req, res, next) => {
+  const paysId = req.query.id;
+  const pays = await Pays.findById(paysId);
+  if (!pays) res.json("country is not found .");
 
-    try {
-      await pays.remove();
-    } catch (err) {
-      res.json("Something went wrong, could not delete country.", 500);
-    }
-    res.status(200).json({ message: "Deleted country." });
+  try {
+    await pays.remove();
+  } catch (err) {
+    res.json("Something went wrong, could not delete country.", 500);
   }
-);
+  res.status(200).json({ message: "Deleted country." });
+});
 
 module.exports = router;

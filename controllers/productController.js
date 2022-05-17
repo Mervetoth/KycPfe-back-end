@@ -31,34 +31,31 @@ const { authorization } = require("../functions & middelwares/authorization");
  */
 
 /**********************************ajouterProduit**********************************/
-router.post(
-  "/ajouterProduit",
-  /* authorization("ADMIN"), */ async (req, res) => {
-    //**let's validate the data before we make a produit**//
+router.post("/ajouterProduit", authorization("ADMIN"), async (req, res) => {
+  //**let's validate the data before we make a produit**//
 
-    const { error } = ajouterProduitValidation(req.body);
-    if (error) return res.status(400).json(error.details[0].message);
+  const { error } = ajouterProduitValidation(req.body);
+  if (error) return res.status(400).json(error.details[0].message);
 
-    //******************** create new product********************//
-    const produit = new Produit({
-      risqueProd: req.body.risqueProd,
-      prodName: req.body.prodName,
-    });
-    try {
-      await produit.save();
+  //******************** create new product********************//
+  const produit = new Produit({
+    risqueProd: req.body.risqueProd,
+    prodName: req.body.prodName,
+  });
+  try {
+    await produit.save();
 
-      const result = {
-        status: "Created product .",
-        id: produit._id,
-        risqueProd: produit.risqueProd,
-        prodName: produit.prodName,
-      };
-      res.json({ result });
-    } catch (err) {
-      res.status(400).json(err);
-    }
+    const result = {
+      status: "Created product .",
+      id: produit._id,
+      risqueProd: produit.risqueProd,
+      prodName: produit.prodName,
+    };
+    res.json({ result });
+  } catch (err) {
+    res.status(400).json(err);
   }
-);
+});
 /**
  * @swagger
  * /api/admin/getByIdProduit:
@@ -85,7 +82,7 @@ router.post(
  */
 
 //******************************getByIdProduit******************************//
-router.post("/getByIdProduit", authorization(["ADMIN"]), async (req, res) => {
+router.post("/getByIdProduit", authorization("ADMIN"), async (req, res) => {
   //**let's validate the data before we make a produit**//
   const schema = joi.object({
     id: joi.string().required(),
@@ -133,7 +130,7 @@ router.post("/getByIdProduit", authorization(["ADMIN"]), async (req, res) => {
 //********************updateProduit********************//
 router.patch(
   "/updateProduit",
-  authorization(["ADMIN"]),
+  authorization("ADMIN"),
   async (req, res, next) => {
     try {
       const produitId = req.query.id;
@@ -168,7 +165,7 @@ router.patch(
 //********************listingProduit********************//
 router.get(
   "/listingProduit",
-  authorization(["ADMIN"]),
+  authorization("ADMIN"),
   async (req, res, next) => {
     let produits;
     try {
@@ -201,7 +198,7 @@ router.get(
  */
 router.delete(
   "/deleteProduit",
-  authorization(["ADMIN"]),
+  authorization("ADMIN"),
   async (req, res, next) => {
     const produitId = req.query.id;
     const produit = await Produit.findById(produitId);
