@@ -207,3 +207,28 @@ router.delete("/deletePays", authorization("ADMIN"), async (req, res, next) => {
 });
 
 module.exports = router;
+
+///
+router.post("/getByIdPays", authorization("ADMIN"), async (req, res) => {
+  //**let's validate the data before we make a pays**//
+  const schema = joi.object({
+    id: joi.string().required(),
+  });
+  const { error } = schema.validate(req.body);
+  if (error) return res.status(400).json(error.details[0].message);
+
+  //**checking if the product exists**//.
+
+  const pays = await Pays.findById(req.body.id);
+  if (pays) {
+    const result = {
+      status: "Pays :",
+      id: pays._id,
+      paysRisque: pays.paysRisque,
+      pays: pays.pays,
+    };
+    res.send({ result });
+  } else {
+    return res.status(400).json("Pays is not found");
+  }
+});

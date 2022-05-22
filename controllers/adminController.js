@@ -198,7 +198,7 @@ router.patch("/updateAdmin", async (req, res, next) => {
     try {
       const admin = await Admin.findById(decoded._id, "-password");
       //********************Upload********************
-      var path = require("path");
+      /*  var path = require("path");
       originPath = path.resolve(`uploads`);
       if (path.extname(req.file.originalname) === ".png" || ".jpg") {
         const filePath = originPath + `/${decoded._id}`;
@@ -206,10 +206,10 @@ router.patch("/updateAdmin", async (req, res, next) => {
         admin.avatar = filePath + `/${Date.now()}${req.file.originalname}`;
       } else {
         res.status(400).json("the extension must be png or jpg");
-      }
+      } */
       Object.assign(admin, req.body);
       admin.save();
-      res.json({ data: admin });
+      res.json({ result: admin });
     } catch (err) {
       res.status(400).json("id is not found");
     }
@@ -303,7 +303,7 @@ router.get(
   async (req, res, next) => {
     let admins;
     try {
-      const { page = 1, limit = 2 } = req.query;
+      const { page = 1, limit = 10 } = req.query;
       admins = await Admin.find({}, "-password")
         .limit(limit * 1)
         .skip((page - 1) * limit);
@@ -336,7 +336,7 @@ router.get(
 router.get("/listingUser", authorization("ADMIN"), async (req, res, next) => {
   let users;
   try {
-    const { page = 1, limit = 2 } = req.query;
+    const { page = 1, limit = 10 } = req.query;
     users = await User.find({}, "-password")
       .limit(limit * 1)
       .skip((page - 1) * limit);
@@ -682,6 +682,33 @@ router.delete("/deleteUser", authorization("ADMIN"), async (req, res, next) => {
     res.json("Something went wrong, could not delete user.");
   }
   res.status(200).json({ message: "Deleted user." });
+});
+
+router.post("/getByIdAdmin", authorization("ADMIN"), async (req, res) => {
+  //**let's validate the data before we make a admin**//
+  const schema = joi.object({
+    id: joi.string().required(),
+  });
+  const { error } = schema.validate(req.body);
+  if (error) return res.status(400).json(error.details[0].message);
+
+  //**checking if the product exists**//.
+
+  const admin = await Admin.findById(req.body.id);
+  if (admin) {
+    const result = {
+      status: "Admin ",
+      id: admin._id,
+      firstName: admin.firstName,
+      lastName: admin.lastName,
+      email: admin.email,
+      permissions: admin.permissions,
+      telNumber: admin.telNumber,
+    };
+    res.send({ result });
+  } else {
+    return res.status(400).json("Admin is not found");
+  }
 });
 
 //********************EXPORTS********************//
