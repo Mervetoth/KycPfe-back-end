@@ -30,24 +30,13 @@ const userSchema = new mongoose.Schema({
       required: true,
     },
   ],
-  pays_id: {
-    type: String,
-    required: true,
-  },
-  prod_id: {
-    type: String,
-    required: true,
-  },
+
   birthDate: {
     type: String,
     required: true,
     min: 6,
   },
-  adresse: {
-    type: String,
-    required: true,
-    min: 6,
-  },
+
   cin: {
     type: String,
     required: true,
@@ -71,5 +60,30 @@ const userSchema = new mongoose.Schema({
       type: String,
     },
   ],
+
+  ////////////////////////////
+  adresse: {
+    type: String,
+    required: true,
+    min: 6,
+  },
+  postalCode: {
+    type: String,
+    required: true,
+    min: 6,
+  },
+  city: {
+    type: String,
+    required: true,
+    min: 6,
+  },
+  pays_id: {
+    type: String,
+    required: true,
+  },
+  gender: {
+    type: String,
+    required: true,
+  },
 });
 module.exports = mongoose.model("User", userSchema);

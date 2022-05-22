@@ -65,9 +65,6 @@ router.post("/register", authorization("ADMIN"), async (req, res) => {
   if (!pays_idExist)
     return res.status(400).json("User must belong to an existing country .");
 
-  //**checking if the tel is already in the database**//
-  const prod_idExist = await Produit.findOne({ prod_id: req.body.prod_id });
-  if (!prod_idExist) return res.status(400).json("Product not found .");
   //**hash the passwords**//
   const salt = await bcrypt.genSalt(10);
   const hashedPassword = await bcrypt.hash(req.body.password, salt);
@@ -76,13 +73,18 @@ router.post("/register", authorization("ADMIN"), async (req, res) => {
     firstName: req.body.firstName,
     lastName: req.body.lastName,
     pays_id: req.body.pays_id,
-    prod_id: req.body.prod_id,
+
     adresse: req.body.adresse,
     birthDate: req.body.birthDate,
     cin: req.body.cin,
     telNumber: req.body.telNumber,
     email: req.body.email,
     permissions: req.body.permissions,
+    postalCode: req.body.postalCode,
+
+    city: req.body.city,
+    gender: req.body.gender,
+
     password: hashedPassword,
   });
   try {
@@ -104,13 +106,18 @@ router.post("/register", authorization("ADMIN"), async (req, res) => {
       lastName: user.lastName,
       email: user.email,
       pays_id: user.pays_id,
-      prod_id: user.prod_id,
+
       birthDate: user.birthDate,
       cin: user.cin,
       telNumber: user.telNumber,
       adresse: user.adresse,
       permissions: user.permissions,
       createdAt: user.createdAt,
+
+      postalCode: req.body.postalCode,
+
+      city: req.body.city,
+      gender: req.body.gender,
     };
     res.json({ token, refresh, result });
     //    res.header("auth-token", token).json(token, refresh, result);
@@ -171,10 +178,13 @@ router.post("/login", async (req, res) => {
     telNumber: user.telNumber,
     birthDate: user.birthDate,
     pays_id: user.pays_id,
-    prod_id: user.prod_id,
     adresse: user.adresse,
     permissions: user.permissions,
     createdAt: user.createdAt,
+    postalCode: user.postalCode,
+
+    city: user.city,
+    gender: user.gender,
   };
   const result = {
     status: "LOGGED IN SUCCCESS ",
@@ -185,11 +195,15 @@ router.post("/login", async (req, res) => {
     lastName: user.lastName,
     cin: user.cin,
     email: user.email,
+    gender: user.gender,
+
     telNumber: user.telNumber,
     birthDate: user.birthDate,
     pays_id: user.pays_id,
-    prod_id: user.prod_id,
     adresse: user.adresse,
+    postalCode: user.postalCode,
+
+    city: user.city,
     permissions: user.permissions,
     createdAt: user.createdAt,
   };
@@ -233,8 +247,12 @@ router.post("/refresh", async (req, res, next) => {
         adresse: tokenList[req.body.refrech].adresse,
         telNumber: tokenList[req.body.refrech].telNumber,
         pays_id: tokenList[req.body.refrech].pays_id,
-        prod_id: tokenList[req.body.refrech].prod_id,
         permissions: tokenList[req.body.refrech].permissions,
+
+        city: tokenList[req.body.refrech].city,
+        postalCode: tokenList[req.body.refrech].postalCode,
+
+        gender: tokenList[req.body.refrech].gender,
       };
       let token = generatetoken(
         { _id: user._id, permissions: user.permissions },

@@ -18,13 +18,17 @@ const registerValidationUser = (data) => {
     lastName: joi.string().min(3).required(),
     telNumber: joi.string().length(8).required(),
     email: joi.string().min(6).required().email(),
-    prod_id: joi.string().required(),
+
     pays_id: joi.string().required(),
     birthDate: joi.date().required(),
     adresse: joi.string().min(8).required(),
     cin: joi.string().min(8).required(),
-    password: joi.string().min(6).required(),
+    password: joi.string().min(4).required(),
     permissions: joi.string().min(4).required(),
+
+    postalCode: joi.string().min(4).required(),
+    city: joi.string().min(4).required(),
+    gender: joi.string().min(4).required(),
   };
   return joi.validate(data, schema);
 };
@@ -62,7 +66,7 @@ const ajouterNotifValidation = (data) => {
   const schema = {
     title: joi.string().required(),
     description: joi.string().required(),
-    status:joi.string().required()
+    status: joi.string().required(),
   };
   return joi.validate(data, schema);
 };
