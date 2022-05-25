@@ -77,7 +77,7 @@ const userSchema = new mongoose.Schema({
     required: true,
     min: 6,
   },
-  pays_id: {
+  pays: {
     type: String,
     required: true,
   },

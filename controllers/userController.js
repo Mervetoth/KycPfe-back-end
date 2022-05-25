@@ -61,7 +61,8 @@ router.post("/register", authorization("ADMIN"), async (req, res) => {
     return res.status(400).json("User with this phone number already exists .");
 
   //**checking if the tel is already in the database**//
-  const pays_idExist = await Pays.findOne({ pays_id: req.body.pays_id });
+  const pays_idExist = await Pays.findOne({ pays: req.body.pays_id });
+  console.log(pays_idExist);
   if (!pays_idExist)
     return res.status(400).json("User must belong to an existing country .");
 
@@ -72,7 +73,7 @@ router.post("/register", authorization("ADMIN"), async (req, res) => {
   const user = new User({
     firstName: req.body.firstName,
     lastName: req.body.lastName,
-    pays_id: req.body.pays_id,
+    pays: req.body.pays_id,
 
     adresse: req.body.adresse,
     birthDate: req.body.birthDate,
@@ -105,7 +106,7 @@ router.post("/register", authorization("ADMIN"), async (req, res) => {
       firstName: user.firstName,
       lastName: user.lastName,
       email: user.email,
-      pays_id: user.pays_id,
+      pays: user.pays,
 
       birthDate: user.birthDate,
       cin: user.cin,
@@ -177,7 +178,7 @@ router.post("/login", async (req, res) => {
     email: user.email,
     telNumber: user.telNumber,
     birthDate: user.birthDate,
-    pays_id: user.pays_id,
+    pays: user.pays,
     adresse: user.adresse,
     permissions: user.permissions,
     createdAt: user.createdAt,
@@ -199,7 +200,7 @@ router.post("/login", async (req, res) => {
 
     telNumber: user.telNumber,
     birthDate: user.birthDate,
-    pays_id: user.pays_id,
+    pays: user.pays,
     adresse: user.adresse,
     postalCode: user.postalCode,
 
@@ -246,7 +247,7 @@ router.post("/refresh", async (req, res, next) => {
         birthDate: tokenList[req.body.refrech].birthDate,
         adresse: tokenList[req.body.refrech].adresse,
         telNumber: tokenList[req.body.refrech].telNumber,
-        pays_id: tokenList[req.body.refrech].pays_id,
+        pays: tokenList[req.body.refrech].pays,
         permissions: tokenList[req.body.refrech].permissions,
 
         city: tokenList[req.body.refrech].city,
@@ -310,7 +311,7 @@ router.patch("/updateUser", async (req, res, next) => {
   try {
     const user = await User.findById(req.query.id, "-password");
     //********************Upload********************
-    var path = require("path");
+    /* var path = require("path");
     originPath = path.resolve(`uploads`);
     if (path.extname(req.file.originalname) === ".png" || ".jpg") {
       const filePath = originPath + `/${user.id}`;
@@ -319,7 +320,7 @@ router.patch("/updateUser", async (req, res, next) => {
       user.avatar = filePath + `/${Date.now()}${req.file.originalname}`;
     } else {
       res.status(400).json("the extension must be png or jpg");
-    }
+    } */
     Object.assign(user, req.body);
     user.save();
     res.json({ data: user });
@@ -536,6 +537,45 @@ router.post("/sendMail", async (req, res) => {
   } catch (error) {
     res.status(400);
     res.json("An error occured");
+  }
+});
+
+//********************getByIdUser********************//
+
+router.post("/getByIdUser", authorization("ADMIN"), async (req, res) => {
+  //**let's validate the data before we make a user**//
+  const schema = joi.object({
+    id: joi.string().required(),
+  });
+  const { error } = schema.validate(req.body);
+  if (error) return res.status(400).json(error.details[0].message);
+
+  //**checking if the product exists**//.
+
+  const user = await User.findById(req.body.id);
+  if (user) {
+    const result = {
+      status: "User ",
+      id: user._id,
+      firstName: user.firstName,
+      lastName: user.lastName,
+      cin: user.cin,
+      email: user.email,
+      gender: user.gender,
+
+      telNumber: user.telNumber,
+      birthDate: user.birthDate,
+      pays: user.pays,
+      adresse: user.adresse,
+      postalCode: user.postalCode,
+
+      city: user.city,
+      permissions: user.permissions,
+      createdAt: user.createdAt,
+    };
+    res.send({ result });
+  } else {
+    return res.status(400).json("User is not found");
   }
 });
 //********************EXPORTS********************//

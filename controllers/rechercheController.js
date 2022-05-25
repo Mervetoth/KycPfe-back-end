@@ -59,7 +59,7 @@ router.post("/rechercheLocal", authorization("ADMIN"), async (req, res) => {
     const user = await User.findOne({ cin: req.body.cin });
     if (!user) {
       var recherche = new Recherche({
-        status:0,
+        status: 0,
         typeRech: "Local",
         cin: req.body.cin,
         firstName: req.body.firstName,
@@ -94,7 +94,7 @@ router.post("/rechercheOfac", authorization("ADMIN"), async (req, res) => {
   //**let's validate the data before we make a Recherche**//
   const schema = joi.object({
     firstName: joi.string().required(),
-    country: joi.string(),
+
     lastName: joi.string().required(),
   });
   const { error } = schema.validate(req.body);
@@ -117,18 +117,18 @@ router.post("/rechercheOfac", authorization("ADMIN"), async (req, res) => {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          apiKey: "abdfa087-4a94-440b-9893-8fd395f600da",
+          apiKey: "881dd777-d900-4631-8a0d-fddec25a4e8e",
           cases: [{ name: req.body.firstName + " " + req.body.lastName }],
           source: ["SDN", "NONSDN", "DPL", "UN", "UK"],
         }),
       });
 
       const content = await rawResponse.json();
-  
 
-      if ( ( content.matches[req.body.firstName + " " + req.body.lastName]).length===0) {
-    
-
+      if (
+        content.matches[req.body.firstName + " " + req.body.lastName].length ===
+        0
+      ) {
         var recherche = new Recherche({
           status: 0,
           typeRech: "Individual",
@@ -138,67 +138,61 @@ router.post("/rechercheOfac", authorization("ADMIN"), async (req, res) => {
           adminId: decoded._id,
         });
 
-    await recherche.save();
-
-      } 
-      var   recherche =  await new Recherche({
+        await recherche.save();
+      }
+      var recherche = await new Recherche({
         status: 1,
         typeRech: "Individual",
         country: req.body.country,
         firstName: req.body.firstName,
         lastName: req.body.lastName,
         adminId: decoded._id,
-  
-
       });
- let listIdMatches=await[]
-     await   content.matches[req.body.firstName + " " + req.body.lastName].forEach( async (element,index) => {
-            const resultatCorr = new ResultatCorr({
-          status: 1,   
-          source:element.source,
-          fullName:element.fullName,
-          firstName:element.firstName,
-          lastName:element.lastName,
-          dob:element.dob,
-          addresses:element.addresses ,
-          sdnType:element.sdnType,
-          remarks:element.remarks,
-          programs:element.programs,
-          driversLicenses:element.driversLicenses,
-          score:element.score,
-          gender:element.gender,
-          passports:element.passports,
-          action:element.action,
-         akas:element.akas, 
-        }) ;
-  const savedObj=  await  resultatCorr.save();
-  
+      let listIdMatches = await [];
+      await content.matches[
+        req.body.firstName + " " + req.body.lastName
+      ].forEach(async (element, index) => {
+        const resultatCorr = new ResultatCorr({
+          status: 1,
+          source: element.source,
+          fullName: element.fullName,
+          firstName: element.firstName,
+          lastName: element.lastName,
+          dob: element.dob,
+          addresses: element.addresses,
+          sdnType: element.sdnType,
+          remarks: element.remarks,
+          programs: element.programs,
+          driversLicenses: element.driversLicenses,
+          score: element.score,
+          gender: element.gender,
+          passports: element.passports,
+          action: element.action,
+          akas: element.akas,
+        });
+        const savedObj = await resultatCorr.save();
 
-    
+        recherche.listeCorr = [...recherche.listeCorr, savedObj._id];
 
-    recherche.listeCorr= [...recherche.listeCorr,savedObj._id] 
-    
-    if(content.matches[req.body.firstName + " " + req.body.lastName].length-1===index)
-    await recherche.save();
-       });
+        if (
+          content.matches[req.body.firstName + " " + req.body.lastName].length -
+            1 ===
+          index
+        )
+          await recherche.save();
+      });
 
-      
-   
       //******************** create new Search result ********************//
-      
-    
+
       try {
-         
-        res
-          .status(200)
-          .json({
-            content:
-              content.matches[req.body.firstName + " " + req.body.lastName],
-          });
+        res.status(200).json({
+          content:
+            content.matches[req.body.firstName + " " + req.body.lastName],
+        });
       } catch (err) {
         res.status(400).json(err);
-    }}
-    )();
+      }
+    })();
   }
 });
 /**
@@ -252,7 +246,6 @@ router.post("/getByIdRecherche", async (req, res) => {
   };
   res.json({ result });
 });
-
 
 /**
  * @swagger

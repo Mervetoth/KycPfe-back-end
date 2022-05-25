@@ -21,7 +21,7 @@ const registerValidationUser = (data) => {
 
     pays_id: joi.string().required(),
     birthDate: joi.date().required(),
-    adresse: joi.string().min(8).required(),
+    adresse: joi.string().required(),
     cin: joi.string().min(8).required(),
     password: joi.string().min(4).required(),
     permissions: joi.string().min(4).required(),
