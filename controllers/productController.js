@@ -100,7 +100,7 @@ router.post("/getByIdProduit", authorization("ADMIN"), async (req, res) => {
       risqueProd: produit.risqueProd,
       prodName: produit.prodName,
     };
-    res.json({ result });
+    res.send({ result });
   } else {
     return res.status(400).json("Product is not found");
   }
@@ -138,7 +138,7 @@ router.patch(
       if (!produit) res.json("Product is not found .");
       Object.assign(produit, req.body);
       produit.save();
-      res.json({ data: produit });
+      res.json({ result: produit });
     } catch (err) {
       res.status(400).json("Product is not found .");
     }
@@ -169,7 +169,7 @@ router.get(
   async (req, res, next) => {
     let produits;
     try {
-      const { page = 1, limit = 2 } = req.query;
+      const { page = 1, limit = 10 } = req.query;
       produits = await Produit.find({}, "-password")
         .limit(limit * 1)
         .skip((page - 1) * limit);
