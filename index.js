@@ -10,7 +10,7 @@ const rechercheController = require("./controllers/rechercheController");
 const ResultatCorr = require("./controllers/ResultatCorrController");
 const paysController = require("./controllers/paysController");
 const notif = require("./controllers/notificationController");
-
+const dashboardContent = require("./controllers/dashboardContrller");
 const dotenv = require("dotenv");
 const multer = require("multer");
 const upload = multer();
@@ -47,7 +47,8 @@ app.use(
   rechercheController,
   notif,
   ResultatCorr,
-  paysController
+  paysController,
+  dashboardContent
 );
 //********************Swagger********************//
 const swaggerJsDoc = require("swagger-jsdoc");
