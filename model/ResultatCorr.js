@@ -4,7 +4,7 @@ const resultatCorrSchema = new mongoose.Schema({
     type: String,
   },
   status: {
-    type: Number,
+    type: String,
   },
   fullName: {
     type: String,
@@ -59,11 +59,11 @@ const resultatCorrSchema = new mongoose.Schema({
   },
   akas: [
     {
-      uid:  String ,
-      score: String ,
-      category: String ,
-      lastName:  String ,
-      firstName:  String ,
+      uid: String,
+      score: String,
+      category: String,
+      lastName: String,
+      firstName: String,
     },
   ],
   dob: {

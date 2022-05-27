@@ -18,13 +18,13 @@ router.get(
     let nbUsers;
     let nbProducts;
     let nbPays;
-    let nbsearch;
+    let nbSearch;
 
     try {
       nbAdmins = await Admin.count();
       nbPays = await Pays.count();
       nbProducts = await Produit.count();
-      nbsearch = await Search.count();
+      nbSearch = await Search.count();
       nbUsers = await User.count();
       nbAffiche = await AfficheKyc.count();
     } catch (err) {}
@@ -33,7 +33,7 @@ router.get(
       nbAdmins,
       nbPays,
       nbProducts,
-      nbsearch,
+      nbSearch,
       nbUsers,
       nbAffiche,
     });

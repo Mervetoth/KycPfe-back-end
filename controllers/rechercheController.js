@@ -59,7 +59,7 @@ router.post("/rechercheLocal", authorization("ADMIN"), async (req, res) => {
     const user = await User.findOne({ cin: req.body.cin });
     if (!user) {
       var recherche = new Recherche({
-        status: 0,
+        status: "Not Found",
         typeRech: "Local",
         cin: req.body.cin,
         firstName: req.body.firstName,
@@ -68,7 +68,7 @@ router.post("/rechercheLocal", authorization("ADMIN"), async (req, res) => {
       });
     } else {
       var recherche = new Recherche({
-        status: 1,
+        status: "Found",
         typeRech: "Local",
         cin: req.body.cin,
         firstName: user.firstName,
@@ -130,8 +130,8 @@ router.post("/rechercheOfac", authorization("ADMIN"), async (req, res) => {
         0
       ) {
         var recherche = new Recherche({
-          status: 0,
-          typeRech: "Individual",
+          status: "not found",
+          typeRech: "International",
           country: req.body.country,
           firstName: req.body.firstName,
           lastName: req.body.lastName,
@@ -141,8 +141,8 @@ router.post("/rechercheOfac", authorization("ADMIN"), async (req, res) => {
         await recherche.save();
       }
       var recherche = await new Recherche({
-        status: 1,
-        typeRech: "Individual",
+        status: "found",
+        typeRech: "International",
         country: req.body.country,
         firstName: req.body.firstName,
         lastName: req.body.lastName,
@@ -153,7 +153,7 @@ router.post("/rechercheOfac", authorization("ADMIN"), async (req, res) => {
         req.body.firstName + " " + req.body.lastName
       ].forEach(async (element, index) => {
         const resultatCorr = new ResultatCorr({
-          status: 1,
+          status: "found",
           source: element.source,
           fullName: element.fullName,
           firstName: element.firstName,
@@ -232,14 +232,15 @@ router.post("/getByIdRecherche", async (req, res) => {
   if (!recherche) return res.status(400).json("Search result is not found");
 
   const result = {
-    status: "Resultat de recherche :",
+    /*   status: "Resultat de recherche :", */
+    status: recherche.status,
     id: recherche._id,
     typeRech: recherche.typeRech,
     cin: recherche.cin,
     firstName: recherche.firstName,
     lastName: recherche.lastName,
     adminId: recherche.adminId,
-    status: recherche.status,
+
     listeCorr: recherche.listeCorr,
     historiqueRech: recherche.historiqueRech,
     listeCorr: recherche.listeCorr,
@@ -266,7 +267,7 @@ router.post("/getByIdRecherche", async (req, res) => {
 router.get("/listingRecherche", async (req, res, next) => {
   let recherches;
   try {
-    const { page = 1, limit = 2 } = req.query;
+    const { page = 1, limit = 8 } = req.query;
     recherches = await Recherche.find({}, "-password")
       .limit(limit * 1)
       .skip((page - 1) * limit);
