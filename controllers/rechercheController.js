@@ -70,11 +70,26 @@ router.post("/rechercheLocal", authorization("ADMIN"), async (req, res) => {
       var recherche = new Recherche({
         status: "Found",
         typeRech: "Local",
+
+        adminId: decoded._id,
         cin: req.body.cin,
         firstName: user.firstName,
         lastName: user.lastName,
-        adminId: decoded._id,
+        cin: user.cin,
+        email: user.email,
+        gender: user.gender,
+
+        telNumber: user.telNumber,
+        birthDate: user.birthDate,
+        pays: user.pays,
+        adresse: user.adresse,
+        postalCode: user.postalCode,
+
+        city: user.city,
+        permissions: user.permissions,
+        createdAt: user.createdAt,
       });
+      console.log(recherche);
     }
 
     //******************** create new Search result ********************//
@@ -171,7 +186,7 @@ router.post("/rechercheOfac", authorization("ADMIN"), async (req, res) => {
           akas: element.akas,
         });
         const savedObj = await resultatCorr.save();
-
+        console.log(resultatCorr.status);
         recherche.listeCorr = [...recherche.listeCorr, savedObj._id];
 
         if (
