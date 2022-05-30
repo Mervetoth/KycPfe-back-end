@@ -451,6 +451,7 @@ router.delete("/logout", async (req, res) => {
 //********************resetPassword********************//
 router.patch("/resetPassword", async (req, res, next) => {
   const schema = joi.object({
+    password: joi.string().required(),
     newPass: joi.string().required(),
     newPass2: joi.string().required(),
   });
@@ -475,7 +476,7 @@ router.patch("/resetPassword", async (req, res, next) => {
         admin.password = hashedPassword;
         await admin.save();
         //await token.delete();
-        res.json({ data: admin });
+        res.json({ result: admin });
       } else {
         res.json("Try again");
       }
