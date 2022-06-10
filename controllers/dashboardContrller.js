@@ -19,14 +19,18 @@ router.get(
     let nbProducts;
     let nbPays;
     let nbSearch;
-
+    let listPays;
+    let nbAffiche;
     try {
       nbAdmins = await Admin.count();
       nbPays = await Pays.count();
+
       nbProducts = await Produit.count();
       nbSearch = await Search.count();
       nbUsers = await User.count();
       nbAffiche = await AfficheKyc.count();
+      listPays = await Pays.find({}).sort({ paysRisque: -1 });
+      console.log(paysRisque);
     } catch (err) {}
 
     res.json({
@@ -36,6 +40,7 @@ router.get(
       nbSearch,
       nbUsers,
       nbAffiche,
+      listPays,
     });
   }
 );
