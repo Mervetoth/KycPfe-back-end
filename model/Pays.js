@@ -12,7 +12,7 @@ const paysSchema = new mongoose.Schema({
   },
   flag: {
     type: String,
-    required: true,
+    required: false,
   },
   createdAt: {
     type: Date,

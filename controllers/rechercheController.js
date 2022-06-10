@@ -121,7 +121,7 @@ router.post("/rechercheOfac", authorization("ADMIN"), async (req, res) => {
     res.status(400).json("Token is not found");
   } else {
     const decoded = jwt_decode(token);
-
+    let listCorrResult = [];
     const admin = await Admin.findById(decoded._id, "-password");
 
     (async () => {
@@ -164,6 +164,7 @@ router.post("/rechercheOfac", authorization("ADMIN"), async (req, res) => {
         adminId: decoded._id,
       });
       let listIdMatches = await [];
+
       await content.matches[
         req.body.firstName + " " + req.body.lastName
       ].forEach(async (element, index) => {
@@ -185,9 +186,10 @@ router.post("/rechercheOfac", authorization("ADMIN"), async (req, res) => {
           action: element.action,
           akas: element.akas,
         });
+        listCorrResult = [...listCorrResult, resultatCorr];
         const savedObj = await resultatCorr.save();
         console.log(resultatCorr.status);
-        recherche.listeCorr = [...recherche.listeCorr, savedObj._id];
+        recherche.listeCorr = await [...recherche.listeCorr, savedObj._id];
 
         if (
           content.matches[req.body.firstName + " " + req.body.lastName].length -
@@ -201,8 +203,7 @@ router.post("/rechercheOfac", authorization("ADMIN"), async (req, res) => {
 
       try {
         res.status(200).json({
-          content:
-            content.matches[req.body.firstName + " " + req.body.lastName],
+          content: listCorrResult,
         });
       } catch (err) {
         res.status(400).json(err);

@@ -53,6 +53,11 @@ const resultatCorrSchema = new mongoose.Schema({
       type: String,
     },
   ],
+  citizenship: [
+    {
+      type: String,
+    },
+  ],
 
   score: {
     type: String,
