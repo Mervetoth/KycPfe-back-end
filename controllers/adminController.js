@@ -307,12 +307,17 @@ router.get(
       admins = await Admin.find({}, "-password")
         .limit(limit * 1)
         .skip((page - 1) * limit);
+      const count = await Admin.count();
+      const nbpage = Math.ceil(count / limit);
+      res.json({
+        admins: admins.map((admins) => admins.toObject({ getters: true })),
+        count,
+        nbpage,
+        currentPage: parseInt(page),
+      });
     } catch (err) {
       res.status(400).json(err);
     }
-    res.json({
-      admins: admins.map((admin) => admin.toObject({ getters: true })),
-    });
   }
 );
 /**
@@ -347,6 +352,7 @@ router.get("/listingUser", authorization("ADMIN"), async (req, res, next) => {
       users: users.map((user) => user.toObject({ getters: true })),
       count,
       nbpage,
+      currentPage: parseInt(page),
     });
   } catch (err) {
     res.status(400).json(err);
@@ -510,7 +516,7 @@ router.patch("/resetPassword", async (req, res, next) => {
  *         description: Erreur
  */
 //********************newPasswordReset********************//
-router.post("/newPasswordReset", async (req, res) => {
+router.post("/newPasswordReset", async (req, res, next) => {
   /////////////validator///////////
   const schema = joi.object({
     token: joi.string().required(),
@@ -549,7 +555,7 @@ router.post("/newPasswordReset", async (req, res) => {
             "New AcessToken": token,
             "New RefreshToken": refresh,
           };
-          res.json({ data: admin, result });
+          res.send({ data: admin, result });
         } else {
           res.status(400).json("Invalid passsword try again");
         }
@@ -600,7 +606,7 @@ router.post("/sendMail", async (req, res) => {
     let token = generatetoken({ _id: admin._id }, "200s");
     admin.tokenMail = token;
     await admin.save();
-    const link = `${process.env.BASE_URL}/admin/newPasswordReset?token=${token}`;
+    const link = `${process.env.RESET_URL}?token=${token}`;
     await sendEmail(admin.email, "Password reset", link);
     res.json("password reset link sent to your email account");
   } catch (error) {

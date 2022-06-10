@@ -173,12 +173,19 @@ router.get(
       produits = await Produit.find({}, "-password")
         .limit(limit * 1)
         .skip((page - 1) * limit);
+      const count = await Produit.count();
+      const nbpage = Math.ceil(count / limit);
+      res.json({
+        produits: produits.map((produits) =>
+          produits.toObject({ getters: true })
+        ),
+        count,
+        nbpage,
+        currentPage: parseInt(page),
+      });
     } catch (err) {
       res.status(400).json(err);
     }
-    res.json({
-      produits: produits.map((produit) => produit.toObject({ getters: true })),
-    });
   }
 );
 /**

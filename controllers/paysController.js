@@ -162,16 +162,21 @@ router.patch("/updatePays", authorization("ADMIN"), async (req, res, next) => {
 router.get("/listingPays", authorization("ADMIN"), async (req, res, next) => {
   let pays;
   try {
-    const { page = 1, limit = 2 } = req.query;
+    const { page = 1, limit = 10 } = req.query;
     pays = await Pays.find({}, "-password")
       .limit(limit * 1)
       .skip((page - 1) * limit);
+    const count = await Pays.count();
+    const nbpage = Math.ceil(count / limit);
+    res.json({
+      pays: pays.map((pays) => pays.toObject({ getters: true })),
+      count,
+      nbpage,
+      currentPage: parseInt(page),
+    });
   } catch (err) {
     res.status(400).json(err);
   }
-  res.json({
-    pays: pays.map((pays) => pays.toObject({ getters: true })),
-  });
 });
 /**
  * @swagger
@@ -232,3 +237,18 @@ router.post("/getByIdPays", authorization("ADMIN"), async (req, res) => {
     return res.status(400).json("Pays is not found");
   }
 });
+
+// listing risque pays
+router.get("/listingRisquePays", authorization("ADMIN")),
+  async (req, res, next) => {
+    let risk;
+
+    try {
+      risk = await Pays.find();
+      console.log(risk);
+
+      res.send(risk);
+    } catch (err) {
+      res.status(400).json(err);
+    }
+  };

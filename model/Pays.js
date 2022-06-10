@@ -10,6 +10,10 @@ const paysSchema = new mongoose.Schema({
     required: true,
     min: 3,
   },
+  flag: {
+    type: String,
+    required: true,
+  },
   createdAt: {
     type: Date,
     default: Date.now,

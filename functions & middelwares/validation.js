@@ -19,12 +19,13 @@ const registerValidationUser = (data) => {
     telNumber: joi.string().length(8).required(),
     email: joi.string().min(6).required().email(),
 
-    pays_id: joi.string().required(),
+    paysId: joi.string().required(),
     birthDate: joi.date().required(),
     adresse: joi.string().required(),
     cin: joi.string().min(8).required(),
     password: joi.string().min(4).required(),
     permissions: joi.string().min(4).required(),
+    produitId: joi.string().required(),
 
     postalCode: joi.string().min(4).required(),
     city: joi.string().min(4).required(),
@@ -66,7 +67,7 @@ const ajouterNotifValidation = (data) => {
   const schema = {
     title: joi.string().required(),
     description: joi.string().required(),
-    status: joi.string().required(),
+    /*  status: joi.string().required(), */
   };
   return joi.validate(data, schema);
 };

@@ -55,7 +55,7 @@ router.post(
         description: notif.description,
       };
 
-      res.json({ result });
+      res.send({ result });
     } catch (error) {
       res.status(400).json(error);
     }
@@ -84,11 +84,11 @@ router.post(
 //********************listingNotification********************//
 router.get(
   "/listingNotification",
-  authorization("SUPERADMIN"),
+  authorization("ADMIN"),
   async (req, res, next) => {
     let notification;
     try {
-      const { page = 1, limit = 2 } = req.query;
+      const { page = 1, limit = 10 } = req.query;
       notification = await Notification.find({}, "-password")
         .limit(limit * 1)
         .skip((page - 1) * limit);

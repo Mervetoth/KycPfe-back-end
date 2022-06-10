@@ -77,7 +77,7 @@ const userSchema = new mongoose.Schema({
     required: true,
     min: 6,
   },
-  pays: {
+  paysId: {
     type: String,
     required: true,
   },
@@ -85,5 +85,14 @@ const userSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
+  userRisque: {
+    type: String,
+    required: true,
+  },
+  allRisque: [
+    {
+      type: String,
+    },
+  ],
 });
 module.exports = mongoose.model("User", userSchema);

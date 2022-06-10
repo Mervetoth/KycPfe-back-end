@@ -13,11 +13,11 @@ const notificationSchema = new mongoose.Schema({
   createdAt: {
     type: Date,
     default: Date.now,
-  },  
-  status: {
+  },
+  /*   status: {
     type: String,
     required:true
-  },
+  }, */
 });
 
 module.exports = mongoose.model("Notification", notificationSchema);

@@ -17,6 +17,7 @@ const {
 const joi = require("@hapi/joi");
 const sendEmail = require("../functions & middelwares/sendEmail");
 const { authorization } = require("../functions & middelwares/authorization");
+const Notification = require("../model/Notification");
 
 let tokenList = [];
 /**********************************Register**********************************/
@@ -59,9 +60,14 @@ router.post("/register", authorization("ADMIN"), async (req, res) => {
   const telNumberExist = await User.findOne({ telNumber: req.body.telNumber });
   if (telNumberExist)
     return res.status(400).json("User with this phone number already exists .");
+  ////:nhawem aal risque mt3 el produit
+  const produit_idExist = await Produit.findOne({
+    produitId: req.body.produitId,
+  });
+  console.log(produit_idExist);
 
   //**checking if the tel is already in the database**//
-  const pays_idExist = await Pays.findOne({ pays: req.body.pays_id });
+  const pays_idExist = await Pays.findOne({ pays_id: req.body.pays_id });
   console.log(pays_idExist);
   if (!pays_idExist)
     return res.status(400).json("User must belong to an existing country .");
@@ -73,7 +79,7 @@ router.post("/register", authorization("ADMIN"), async (req, res) => {
   const user = new User({
     firstName: req.body.firstName,
     lastName: req.body.lastName,
-    pays: req.body.pays_id,
+    paysId: req.body.paysId,
 
     adresse: req.body.adresse,
     birthDate: req.body.birthDate,
@@ -85,11 +91,34 @@ router.post("/register", authorization("ADMIN"), async (req, res) => {
 
     city: req.body.city,
     gender: req.body.gender,
-
     password: hashedPassword,
   });
   try {
-    const savedUser = await user.save();
+    const userRisque = await ((parseFloat(produit_idExist.risqueProd) +
+      parseFloat(pays_idExist.paysRisque)) /
+      2);
+    if (userRisque >= 80) {
+      const notif = new Notification({
+        title: `${user.firstName} ${user.lastName}`,
+        description: `this new user has a high risk of ${userRisque} `,
+      });
+      try {
+        const savedNotification = await notif.save();
+      } catch (error) {
+        res.status(400).json(error);
+      }
+    } else {
+      const notif = new Notification({
+        title: `${user.firstName} ${user.lastName}`,
+        description: `this new user has a risk of ${userRisque} `,
+      });
+      try {
+        const savedNotification = await notif.save();
+      } catch (error) {
+        res.status(400).json(error);
+      }
+    }
+
     let token = generatetoken(
       { _id: user._id, permissions: user.permissions },
       "200s"
@@ -98,6 +127,9 @@ router.post("/register", authorization("ADMIN"), async (req, res) => {
       { _id: user._id, permissions: user.permissions },
       "200s"
     );
+    user.userRisque = userRisque;
+    user.allRisque = [produit_idExist.risqueProd, pays_idExist.paysRisque];
+    const savedUser = await user.save();
     const result = {
       status: "You've been registred ",
       AccessToken: token,
@@ -120,7 +152,8 @@ router.post("/register", authorization("ADMIN"), async (req, res) => {
       city: req.body.city,
       gender: req.body.gender,
     };
-    res.json({ token, refresh, result });
+    /*    console.log(userRisque); */
+    res.json({ token, refresh, userRisque, result });
     //    res.header("auth-token", token).json(token, refresh, result);
   } catch (err) {
     res.status(400).json(err);
@@ -531,7 +564,7 @@ router.post("/sendMail", async (req, res) => {
     let token = generatetoken({ _id: user._id }, "200s");
     user.tokenMail = token;
     await user.save();
-    const link = `${process.env.BASE_URL}/user/newPasswordReset?token=${token}`;
+    const link = `${process.env.RESET_URL}?token=${token}`;
     await sendEmail(user.email, "Password reset", link);
     res.json("password reset link sent to your email account");
   } catch (error) {

@@ -267,18 +267,23 @@ router.post("/getByIdRecherche", async (req, res) => {
 router.get("/listingRecherche", async (req, res, next) => {
   let recherches;
   try {
-    const { page = 1, limit = 8 } = req.query;
+    const { page = 1, limit = 10 } = req.query;
     recherches = await Recherche.find({}, "-password")
       .limit(limit * 1)
       .skip((page - 1) * limit);
+    const count = await Recherche.count();
+    const nbpage = Math.ceil(count / limit);
+    res.json({
+      recherches: recherches.map((recherches) =>
+        recherches.toObject({ getters: true })
+      ),
+      count,
+      nbpage,
+      currentPage: parseInt(page),
+    });
   } catch (err) {
     res.status(400).json(err);
   }
-  res.json({
-    recherches: recherches.map((Recherche) =>
-      Recherche.toObject({ getters: true })
-    ),
-  });
 });
 /**
  * @swagger
