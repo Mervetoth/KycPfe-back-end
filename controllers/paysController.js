@@ -238,17 +238,21 @@ router.post("/getByIdPays", authorization("ADMIN"), async (req, res) => {
   }
 });
 
-// listing risque pays
-router.get("/listingRisquePays", authorization("ADMIN")),
+// listing nom pays
+router.get(
+  "/listingNomPays",
+  authorization("ADMIN"),
   async (req, res, next) => {
-    let risk;
-
+    let name;
     try {
-      risk = await Pays.find();
-      console.log(risk);
+      name = await Pays.find({}, "pays");
 
-      res.send(risk);
+      console.log(name);
+      res.json({
+        countryName: name.map((name) => name.toObject({ getters: true })),
+      });
     } catch (err) {
       res.status(400).json(err);
     }
-  };
+  }
+);

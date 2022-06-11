@@ -1,4 +1,3 @@
-
 const mongoose = require("mongoose");
 const adminSchema = new mongoose.Schema({
   firstName: {
@@ -39,6 +38,10 @@ const adminSchema = new mongoose.Schema({
     type: String,
     required: true,
     length: 8,
+  },
+  gender: {
+    type: String,
+    required: true,
   },
   tokenMail: {
     type: String,

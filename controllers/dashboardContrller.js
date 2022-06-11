@@ -29,7 +29,7 @@ router.get(
       nbSearch = await Search.count();
       nbUsers = await User.count();
       nbAffiche = await AfficheKyc.count();
-      listPays = await Pays.find({}).sort({ paysRisque: -1 });
+      listPays = await Pays.find({}).sort({ paysRisque: -1 }).limit(6);
       console.log(paysRisque);
     } catch (err) {}
 

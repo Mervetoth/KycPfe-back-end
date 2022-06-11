@@ -127,9 +127,12 @@ router.post("/register", authorization("ADMIN"), async (req, res) => {
       { _id: user._id, permissions: user.permissions },
       "200s"
     );
+
     user.userRisque = userRisque;
     user.allRisque = [produit_idExist.risqueProd, pays_idExist.paysRisque];
     const savedUser = await user.save();
+    const countryName = pays_idExist.pays;
+    const productName = produit_idExist.prodName;
     const result = {
       status: "You've been registred ",
       AccessToken: token,
@@ -138,8 +141,8 @@ router.post("/register", authorization("ADMIN"), async (req, res) => {
       firstName: user.firstName,
       lastName: user.lastName,
       email: user.email,
-      pays: user.pays,
-
+      /*    pays: user.pays,
+produitId: req.body.produitId, */
       birthDate: user.birthDate,
       cin: user.cin,
       telNumber: user.telNumber,
@@ -153,7 +156,7 @@ router.post("/register", authorization("ADMIN"), async (req, res) => {
       gender: req.body.gender,
     };
     /*    console.log(userRisque); */
-    res.json({ token, refresh, userRisque, result });
+    res.json({ token, refresh, userRisque, productName, countryName, result });
     //    res.header("auth-token", token).json(token, refresh, result);
   } catch (err) {
     res.status(400).json(err);

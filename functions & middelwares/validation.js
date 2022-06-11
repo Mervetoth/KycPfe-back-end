@@ -9,6 +9,7 @@ const registerValidationAdmin = (data) => {
     telNumber: joi.string().length(8).required(),
     permissions: joi.array().min(1).required(),
     password: joi.string().min(6).required(),
+    gender: joi.string().required(),
   };
   return joi.validate(data, schema);
 };

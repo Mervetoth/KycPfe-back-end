@@ -60,6 +60,7 @@ router.post("/register", authorization("SUPERADMIN"), async (req, res) => {
     permissions: req.body.permissions,
     telNumber: req.body.telNumber,
     password: hashedPassword,
+    gender: req.body.gender,
   });
   console.log(admin);
   try {
@@ -93,6 +94,7 @@ router.post("/register", authorization("SUPERADMIN"), async (req, res) => {
       telNumber: admin.telNumber,
       permissions: admin.permissions,
       createdAt: admin.createdAt,
+      gender: admin.gender,
     };
     res.json({ result });
   } catch (err) {

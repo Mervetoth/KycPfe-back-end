@@ -219,4 +219,23 @@ router.delete(
     res.status(200).json({ message: "Deleted product." });
   }
 );
+
+router.get(
+  "/listingNomProduit",
+  authorization("ADMIN"),
+  async (req, res, next) => {
+    let name;
+    try {
+      name = await Produit.find({}, "prodName");
+
+      console.log(name);
+      res.json({
+        productName: name.map((name) => name.toObject({ getters: true })),
+      });
+    } catch (err) {
+      res.status(400).json(err);
+    }
+  }
+);
+
 module.exports = router;
