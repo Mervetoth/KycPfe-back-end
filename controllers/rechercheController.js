@@ -324,7 +324,7 @@ router.delete("/deleteRecherche", async (req, res, next) => {
   try {
     await recherche.remove();
   } catch (err) {
-    res.send("Something went wrong, could not delete Search result.");
+    res.json("Something went wrong, could not delete Search result.");
   }
   res.status(200).json({ message: "Deleted Search result ." });
 });
