@@ -70,14 +70,17 @@ const userSchema = new mongoose.Schema({
   postalCode: {
     type: String,
     required: true,
-    min: 6,
+    min: 3,
   },
   city: {
     type: String,
     required: true,
-    min: 6,
   },
   paysId: {
+    type: String,
+    required: true,
+  },
+  produitId: {
     type: String,
     required: true,
   },

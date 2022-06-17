@@ -27,7 +27,7 @@ const registerValidationUser = (data) => {
     password: joi.string().min(4).required(),
     permissions: joi.string().min(4).required(),
     produitId: joi.string().required(),
-
+    risk: joi.string(),
     postalCode: joi.string().min(4).required(),
     city: joi.string().min(4).required(),
     gender: joi.string().min(4).required(),
@@ -37,7 +37,7 @@ const registerValidationUser = (data) => {
 const loginValidation = (data) => {
   const schema = {
     email: joi.string().min(6).required().email(),
-    password: joi.string().min(6).required(),
+    password: joi.string().min(4).required(),
   };
   return joi.validate(data, schema);
 };

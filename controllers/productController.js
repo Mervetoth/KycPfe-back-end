@@ -226,7 +226,7 @@ router.get(
   async (req, res, next) => {
     let name;
     try {
-      name = await Produit.find({}, "prodName");
+      name = await Produit.find();
 
       console.log(name);
       res.json({

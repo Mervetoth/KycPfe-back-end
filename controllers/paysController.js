@@ -245,7 +245,7 @@ router.get(
   async (req, res, next) => {
     let name;
     try {
-      name = await Pays.find({}, "pays");
+      name = await Pays.find({});
 
       console.log(name);
       res.json({

@@ -60,14 +60,13 @@ router.post("/register", authorization("ADMIN"), async (req, res) => {
   const telNumberExist = await User.findOne({ telNumber: req.body.telNumber });
   if (telNumberExist)
     return res.status(400).json("User with this phone number already exists .");
-  ////:nhawem aal risque mt3 el produit
-  const produit_idExist = await Produit.findOne({
-    produitId: req.body.produitId,
-  });
-  console.log(produit_idExist);
+  //**checking if the PRODUCT is already in the database**//
+  const produit_idExist = await Produit.findById(req.body.produitId);
+  if (!produit_idExist) return res.status(400).json("User must have a product");
+  console.log(req.body.produitId);
 
-  //**checking if the tel is already in the database**//
-  const pays_idExist = await Pays.findOne({ pays_id: req.body.pays_id });
+  //**checking if the COUNTRY is already in the database**//
+  const pays_idExist = await Pays.findById(req.body.paysId);
   console.log(pays_idExist);
   if (!pays_idExist)
     return res.status(400).json("User must belong to an existing country .");
@@ -80,6 +79,7 @@ router.post("/register", authorization("ADMIN"), async (req, res) => {
     firstName: req.body.firstName,
     lastName: req.body.lastName,
     paysId: req.body.paysId,
+    produitId: req.body.produitId,
 
     adresse: req.body.adresse,
     birthDate: req.body.birthDate,
@@ -94,9 +94,22 @@ router.post("/register", authorization("ADMIN"), async (req, res) => {
     password: hashedPassword,
   });
   try {
-    const userRisque = await ((parseFloat(produit_idExist.risqueProd) +
-      parseFloat(pays_idExist.paysRisque)) /
-      2);
+    let userRisque = 0;
+    if (req.body.risk) {
+      userRisque = await (
+        (parseFloat(produit_idExist.risqueProd) +
+          parseFloat(pays_idExist.paysRisque) +
+          parseFloat(req.body.risk)) /
+        3
+      ).toFixed(2);
+    } else {
+      userRisque = await (
+        (parseFloat(produit_idExist.risqueProd) +
+          parseFloat(pays_idExist.paysRisque)) /
+        2
+      ).toFixed(2);
+    }
+
     if (userRisque >= 80) {
       const notif = new Notification({
         title: `${user.firstName} ${user.lastName}`,
@@ -129,10 +142,13 @@ router.post("/register", authorization("ADMIN"), async (req, res) => {
     );
 
     user.userRisque = userRisque;
-    user.allRisque = [produit_idExist.risqueProd, pays_idExist.paysRisque];
+    user.allRisque = req.body.risk
+      ? [produit_idExist.risqueProd, pays_idExist.paysRisque, req.body.risk]
+      : [produit_idExist.risqueProd, pays_idExist.paysRisque];
     const savedUser = await user.save();
-    const countryName = pays_idExist.pays;
-    const productName = produit_idExist.prodName;
+    /*  const countryName = pays_idExist.pays;
+    const productName = produit_idExist.prodName; */
+    console.log(produit_idExist);
     const result = {
       status: "You've been registred ",
       AccessToken: token,
@@ -141,8 +157,8 @@ router.post("/register", authorization("ADMIN"), async (req, res) => {
       firstName: user.firstName,
       lastName: user.lastName,
       email: user.email,
-      /*    pays: user.pays,
-produitId: req.body.produitId, */
+      paysId: user.paysId,
+      produitId: user.produitId,
       birthDate: user.birthDate,
       cin: user.cin,
       telNumber: user.telNumber,
@@ -155,9 +171,8 @@ produitId: req.body.produitId, */
       city: req.body.city,
       gender: req.body.gender,
     };
-    /*    console.log(userRisque); */
-    res.json({ token, refresh, userRisque, productName, countryName, result });
-    //    res.header("auth-token", token).json(token, refresh, result);
+
+    res.json({ token, refresh, userRisque, result });
   } catch (err) {
     res.status(400).json(err);
   }
@@ -239,7 +254,8 @@ router.post("/login", async (req, res) => {
     pays: user.pays,
     adresse: user.adresse,
     postalCode: user.postalCode,
-
+    userRisque: user.userRisque,
+    allRisque: user.allRisque,
     city: user.city,
     permissions: user.permissions,
     createdAt: user.createdAt,
